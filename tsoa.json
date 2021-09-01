@@ -1,0 +1,26 @@
+{
+  "entryFile": "src/app.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/controllers/**/*.ts"],
+  "compilerOptions": {
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "typeRoots": ["./node_modules/@types"]
+  },
+  "spec": {
+    "outputDirectory": "src/documentations",
+    "specVersion": 3,
+    "description": "Bookchat Backend",
+    "contact": {
+      "email": "contact@yitec.net",
+      "name": "YITEC R&D"
+    }
+  },
+  "routes": {
+    "routesDir": "src/generated",
+    "middleware": "express"
+  }
+}
