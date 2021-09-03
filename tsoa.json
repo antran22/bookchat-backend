@@ -1,7 +1,7 @@
 {
   "entryFile": "src/app.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": ["src/controllers/**/*.ts"],
+  "controllerPathGlobs": ["src/controllers/**/*Controller.ts"],
   "compilerOptions": {
     "incremental": true,
     "baseUrl": ".",
@@ -17,10 +17,18 @@
     "contact": {
       "email": "contact@yitec.net",
       "name": "YITEC R&D"
+    },
+    "securityDefinitions": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
     }
   },
   "routes": {
     "routesDir": "src/generated",
+    "authenticationModule": "src/controllers/authentication.ts",
     "middleware": "express"
   }
 }

@@ -21,11 +21,3 @@ export class NotFoundException extends HTTPException {
   statusCode = 404;
   name = "Not Found";
 }
-
-export class NotImplementedException extends HTTPException {
-  constructor(name: string) {
-    super(`Route ${name} not implemented`);
-    this.name = "Not Implemented";
-  }
-  statusCode = 500;
-}

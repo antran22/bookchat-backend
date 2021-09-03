@@ -20,4 +20,20 @@ type PropOptions =
 export const requiredProp = (options?: PropOptions) =>
   prop({ ...options, required: true });
 
-export abstract class DatabaseModel extends TimeStamps {}
+interface ObjId {
+  toString(): string;
+  equals(otherId: string | ObjId): boolean;
+}
+
+type ToJSONFunction = <M extends DatabaseModel>(this: M) => M;
+
+export abstract class DatabaseModel extends TimeStamps {
+  /** @ignore */
+  _id!: ObjId;
+  __v!: number;
+
+  /** @ignore */
+  toJSON!: ToJSONFunction;
+
+  abstract sanitise(): unknown;
+}

@@ -1,0 +1,157 @@
+// Note about reference in this graph
+// If a field refers to a Virtual field, the Virtual Field is actually a computed
+// property from the reference. The note contains the real refered field.
+
+Table User {
+  _id ObjectID [pk]
+  full_name string
+  date_of_birth Date
+  gender string
+  email string
+  username string
+  password string
+  avatar string
+  bio string
+
+  contacts "Virtual<User[]>"
+
+  incomingFriendRequests "Virtual<FriendRequest[]>"
+  outgoingFriendRequests "Virtual<FriendRequest[]>"
+
+  friends "Virtual<User[]>"
+  following "Virtual<User[]>"
+  followedBy "Virtual<User[]>"
+
+  reviewedBooks "Virtual<Book[]>"
+
+  translatedBooks "Virtual<Book[]>"
+  writtenBooks "Virtual<Book[]>"
+
+  ownedBooks "Virtual<Book[]>"
+  loanedBooks "Virtual<Book[]>"
+  borrowedBooks "Virtual<Book[]>"
+}
+
+// =======================
+// Social Network
+// =======================
+
+table Post {
+  _id ObjectID[pk]
+  time Date
+  content string
+
+
+  likes "Virtual<User[]>"
+  comments "Virtual<PostComment[]>"
+}
+
+table PostLike {
+  user ObjectID [ref: > User._id]
+  post ObjectID [ref: > Post.likes, note: "Post._id"]
+}
+
+table PostComment {
+  user ObjectID [ref: > User._id]
+  post ObjectID [ref: > Post._id, note: "Post._id"]
+  content string
+}
+
+Table Notification {
+  _id ObjectID [pk]
+  sender ObjectID [ref: > User._id]
+  recipient ObjectID [ref: > User._id]
+  type NotificationType
+  content string
+  expiry Date [note: "After this date, automatically delete the record. Make use of MongoDB TTL"]
+}
+
+Table FriendRequest {
+  sender ObjectID [ref: > User.outgoingFriendRequests, note: "User._id"]
+  recipient ObjectID [ref: > User.incomingFriendRequests, note: "User._id"]
+}
+
+Table Friendship {
+  user1 ObjectID [ref: > User.friends, note: "User._id"]
+  user2 ObjectID [ref: > User.friends, note: "User._id"]
+}
+
+Table Follow {
+  follower ObjectID [ref: > User.following, note: "User._id"]
+  followedBy ObjectID [ref: > User.followedBy, note: "User._id"]
+}
+
+Table Group {
+  _id ObjectID [pk]
+  admins ObjectID[] [ref: > User._id]
+}
+
+Table GroupMembership {
+  user ObjectID [ref: > User._id]
+  group ObjectID [ref: > Group._id]
+}
+
+enum NotificationType {
+  POST_LIKE
+  POST_COMMENT
+  FRIEND_REQUEST
+  // and many more
+}
+
+// =======================
+// Messaging
+// =======================
+
+table Message {
+  _id ObjectID
+  sender ObjectID [ref: > User.contacts, note: "User._id"]
+  recipient ObjectID [ref: > User.contacts, note: "User._id"]
+  content string
+  attachments string[]
+  indexes {
+    (sender, recipient) [note: "For searching contacts"]
+  }
+}
+
+// =======================
+// Book
+// =======================
+
+enum ReadingStatus {
+  UNREAD
+  READING
+  FINISHED
+}
+
+Table BookOwnership {
+  book ObjectID [ref: > Book._id]
+  owner ObjectID [ref: > User.ownedBooks, note: "User._id"]
+  status ReadingStatus
+}
+
+Table BookRenting {
+  book ObjectID [ref: > Book._id]
+  owner ObjectID [ref: > User.loanedBooks, note: "User._id"]
+  borrower ObjectID [ref: > User.borrowedBooks, note: "User._id"]
+  status ReadingStatus
+}
+
+Table Book {
+  _id ObjectID [pk]
+  name string
+  isbn string
+  description string
+
+  publisher string
+  author ObjectID [ref: > User.writtenBooks]
+  translator ObjectID [ref: > User.translatedBooks]
+
+  averageRating "Virtual<int>"
+}
+
+Table BookReviews {
+  _id ObjectID [pk]
+  book ObjectID [ref: > Book._id]
+  user ObjectID [ref: > User.reviewedBooks]
+  rating "range[1-5]"
+}
