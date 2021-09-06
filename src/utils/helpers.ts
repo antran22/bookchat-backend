@@ -62,3 +62,7 @@ export function padWithSlash(path: string | null): string | null {
   }
   return null;
 }
+
+export type ClassInterface<C> = {
+  [K in keyof C]: C[K];
+};

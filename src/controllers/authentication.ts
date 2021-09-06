@@ -1,5 +1,5 @@
 import type express from "express";
-import { decodeJWTToken } from "@/services/User";
+import { decodeJWTToken } from "@/services/Authentication";
 import {
   BadRequestException,
   ForbiddenException,

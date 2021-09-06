@@ -1,7 +1,15 @@
-import {DatabaseModel, requiredProp} from "@/utils/typegoose";
-import {DocumentType, getModelForClass, pre, prop,} from "@typegoose/typegoose";
+import { DatabaseModel, requiredProp } from "@/utils/typegoose";
+import {
+  DocumentType,
+  getModelForClass,
+  pre,
+  prop,
+} from "@typegoose/typegoose";
 import bcrypt from "bcrypt";
 import _ from "lodash";
+import { logger } from "@/utils";
+
+const userModelLogger = logger.child({ module: "userModel" });
 
 @pre<User>("save", async function (next) {
   if (this.isModified("password") || this.isNew) {
@@ -15,32 +23,29 @@ import _ from "lodash";
   return next();
 })
 export class User extends DatabaseModel {
-  @requiredProp()
-  username!: string;
-
-  @requiredProp()
-  password!: string;
+  @requiredProp({ unique: true })
+  email!: string;
 
   @requiredProp()
   fullName!: string;
 
-  @requiredProp()
-  dateOfBirth!: Date;
+  @prop({ default: "" })
+  password!: string;
 
-  @requiredProp({ default: [], type: () => [String] })
+  @prop({ default: [], type: () => [String] })
   accessScope!: string[];
 
-  @requiredProp()
+  @prop({ default: "other" })
   gender!: string;
-
-  @requiredProp()
-  email!: string;
 
   @prop()
   avatar?: string;
 
   @prop()
   bio?: string;
+
+  @prop()
+  dateOfBirth?: Date;
 
   public async isPasswordValid(
     this: DocumentType<User>,
@@ -52,8 +57,36 @@ export class User extends DatabaseModel {
   sanitise(): SanitisedUser {
     return _.omit(this.toJSON(), "password", "accessScope", "updatedAt", "__v");
   }
-}
 
+  static async createUser(input: UserCreationInput): Promise<User> {
+    userModelLogger.info({ input }, `Creating new User`);
+    return UserModel.create(input);
+  }
+
+  static async getUserOrCreateNew(
+    input: UserCreationInput
+  ): Promise<{ user: User; isNew: boolean }> {
+    userModelLogger.info(
+      { input },
+      `Looking for user with given creation input.`
+    );
+    const user = await UserModel.findOne().where("email", input.email).exec();
+    if (!user) {
+      const newUser = await UserModel.createUser(input);
+      return { user: newUser, isNew: true };
+    }
+    return { user, isNew: false };
+  }
+}
+export interface UserCreationInput {
+  email: string;
+  fullName: string;
+  password?: string;
+  gender?: string;
+  avatar?: string;
+  bio?: string;
+  dateOfBirth?: Date;
+}
 export type SanitisedUser = Omit<
   User,
   "password" | "accessScope" | "updatedAt" | "__v"

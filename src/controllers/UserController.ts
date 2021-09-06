@@ -11,15 +11,8 @@ import {
   SuccessResponse,
   Tags,
 } from "@tsoa/runtime";
-import { SanitisedUser, UserModel } from "@/models/User";
-import {
-  createUser,
-  LoginInput,
-  loginUser,
-  signAccessToken,
-  UserCreationInput,
-} from "@/services/User";
-import { NotFoundException, UnauthorizedException } from "./exceptions";
+import { SanitisedUser, UserCreationInput, UserModel } from "@/models/User";
+import { NotFoundException } from "./exceptions";
 import type express from "express";
 
 @Tags("User")
@@ -54,25 +47,8 @@ export class UsersController extends Controller {
   public async createUser(
     @Body() requestBody: UserCreationInput
   ): Promise<SanitisedUser> {
-    const user = await createUser(requestBody);
+    const user = await UserModel.createUser(requestBody);
     this.setStatus(201);
     return user.sanitise();
   }
-
-  @Post("/login")
-  @SuccessResponse("200", "Login Successfully") // Custom success response
-  @Response("401", "Wrong credential")
-  public async login(@Body() requestBody: LoginInput): Promise<LoginOutput> {
-    const user = await loginUser(requestBody);
-    if (user) {
-      return {
-        token: signAccessToken(user),
-      };
-    }
-    throw new UnauthorizedException("Wrong credential");
-  }
-}
-
-interface LoginOutput {
-  token: string;
 }

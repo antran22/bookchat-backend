@@ -8,7 +8,6 @@ Table User {
   date_of_birth Date
   gender string
   email string
-  username string
   password string
   avatar string
   bio string

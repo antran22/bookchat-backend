@@ -17,14 +17,7 @@ function filterErrorJSON(input: ErrorJSON): ErrorJSON {
   return input;
 }
 
-function debugErrorLog(value: any) {
-  if (env.isNodeEnv(NodeEnv.DEVELOPMENT)) {
-    console.error(value);
-  }
-}
-
 const errorHandler: express.ErrorRequestHandler = (err, req, res, next) => {
-  debugErrorLog(err);
   if (err instanceof ValidateError) {
     expressLogger.warn(
       { error: err },
