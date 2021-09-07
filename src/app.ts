@@ -6,7 +6,7 @@ import { RegisterRoutes } from "./generated/routes";
 import { mongoose } from "@typegoose/typegoose";
 import expressPino from "express-pino-logger";
 import { env, expressLogger } from "@/utils";
-import errorHandler from "@/controllers/errorHandler";
+import errorHandler from "@/controllers/_ErrorHandler";
 
 export const app = express();
 

@@ -4,7 +4,7 @@ import {
   BadRequestException,
   ForbiddenException,
   UnauthorizedException,
-} from "@/controllers/exceptions";
+} from "@/utils/exceptions";
 import { User, UserModel } from "@/models/User";
 import _ from "lodash";
 

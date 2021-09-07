@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { join as pathJoin, resolve as pathResolve } from "path";
 import _ from "lodash";
+import url from "url";
 import { parseBoolean } from "./helpers";
 import logger from "./logging";
 
@@ -80,6 +81,10 @@ env.isNodeEnv = (nodeEnv: NodeEnv): boolean => {
 env.projectPath = (...paths: string[]): string => {
   envLogger.debug(`Process working directory is ${process.cwd()}`);
   return pathJoin(process.cwd(), ...paths);
+};
+
+env.resolveAPIPath = (path: string): string => {
+  return new url.URL(path, env("API_ROOT_URL")).href;
 };
 
 export default env;

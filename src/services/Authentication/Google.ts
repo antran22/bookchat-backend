@@ -3,7 +3,7 @@ import qs from "querystring";
 import axios from "axios";
 import type { AuthenticationResult } from "./index";
 import { signAccessToken } from "./index";
-import {UserModel} from "@/models/User";
+import { UserModel } from "@/models/User";
 
 const googleAuthenticationLogger = logger.child({
   module: "authentication/google",
@@ -32,7 +32,7 @@ export async function authenticateWithGoogle(
 ): Promise<AuthenticationResult> {
   googleAuthenticationLogger.info("Authentication with Google");
   const accessToken = await exchangeGoogleAccessToken(query.code);
-  const googleUserInfo = await getUserInfoFromGoogle(accessToken);
+  const googleUserInfo = await getUserInfo(accessToken);
   const { user, isNew } = await UserModel.getUserOrCreateNew({
     email: googleUserInfo.email,
     fullName: googleUserInfo.name,
@@ -54,7 +54,7 @@ interface GoogleUserInfoResponse {
   id: string;
   verified_email: true;
 }
-async function getUserInfoFromGoogle(accessToken: string) {
+async function getUserInfo(accessToken: string) {
   googleAuthenticationLogger.debug(
     { accessToken },
     "Using access token to get user info from Google APIs"

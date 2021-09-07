@@ -1,7 +1,7 @@
 import type express from "express";
 import { ValidateError } from "@tsoa/runtime";
 import { env, expressLogger } from "@/utils";
-import { HTTPException } from "@/controllers/exceptions";
+import { HTTPException } from "@/utils/exceptions";
 import { NodeEnv } from "@/utils/env";
 
 interface ErrorJSON {

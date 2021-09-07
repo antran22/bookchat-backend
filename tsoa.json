@@ -1,7 +1,7 @@
 {
   "entryFile": "src/app.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": ["src/controllers/**/*Controller.ts"],
+  "controllerPathGlobs": ["src/controllers/**/[!_]*Controller.ts"],
   "compilerOptions": {
     "incremental": true,
     "baseUrl": ".",
@@ -28,7 +28,7 @@
   },
   "routes": {
     "routesDir": "src/generated",
-    "authenticationModule": "src/controllers/authentication.ts",
+    "authenticationModule": "src/controllers/_AuthenticationModule.ts",
     "middleware": "express"
   }
 }

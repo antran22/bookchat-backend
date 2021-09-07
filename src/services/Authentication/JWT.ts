@@ -1,5 +1,5 @@
 import { env, logger } from "@/utils";
-import { User } from "@/models/User";
+import type { User } from "@/models/User";
 import jwt from "jsonwebtoken";
 
 const authenticationServiceLogger = logger.child({

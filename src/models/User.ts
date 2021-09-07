@@ -1,13 +1,16 @@
-import { DatabaseModel, requiredProp } from "@/utils/typegoose";
+import { requiredProp } from "@/utils/typegoose";
 import {
   DocumentType,
   getModelForClass,
   pre,
   prop,
+  ReturnModelType,
 } from "@typegoose/typegoose";
 import bcrypt from "bcrypt";
 import _ from "lodash";
 import { logger } from "@/utils";
+import { DatabaseModel } from "./_BaseModel";
+import { Types } from "mongoose";
 
 const userModelLogger = logger.child({ module: "userModel" });
 
@@ -76,6 +79,24 @@ export class User extends DatabaseModel {
       return { user: newUser, isNew: true };
     }
     return { user, isNew: false };
+  }
+
+  static async listByCursor(
+    this: ReturnModelType<typeof User>,
+    limit: number,
+    cursor?: string
+  ): Promise<User[]> {
+    let query;
+    if (cursor) {
+      query = this.find({
+        _id: {
+          $gt: new Types.ObjectId(cursor),
+        },
+      });
+    } else {
+      query = this.find();
+    }
+    return await query.limit(limit).exec();
   }
 }
 export interface UserCreationInput {

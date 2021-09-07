@@ -9,7 +9,7 @@ import {
   SuccessResponse,
   Tags,
 } from "@tsoa/runtime";
-import { UnauthorizedException } from "@/controllers/exceptions";
+import { UnauthorizedException } from "@/utils/exceptions";
 import {
   authenticateWithGoogle,
   AuthenticationResult,
@@ -17,6 +17,7 @@ import {
   localAuthentication,
   LocalAuthenticationInput,
 } from "@/services/Authentication";
+import { SanitisedUser, UserCreationInput, UserModel } from "@/models/User";
 
 @Tags("Authentication")
 @Route("auth")
@@ -32,6 +33,17 @@ export class AuthenticationController extends Controller {
       return result;
     }
     throw new UnauthorizedException("Wrong credential");
+  }
+
+  @SuccessResponse("200", "Created") // Custom success response
+  @Response("400", "Invalid Input")
+  @Post()
+  public async localSignUp(
+    @Body() requestBody: LocalSignUpInput
+  ): Promise<SanitisedUser> {
+    const user = await UserModel.createUser(requestBody);
+    this.setStatus(201);
+    return user.sanitise();
   }
 
   @Get("/google")
@@ -50,3 +62,8 @@ export class AuthenticationController extends Controller {
     return authenticateWithGoogle({ code, state });
   }
 }
+
+/**
+ * The fields required to sign up using local method
+ */
+type LocalSignUpInput = Required<UserCreationInput>;

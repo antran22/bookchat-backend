@@ -1,27 +1,38 @@
 import {
-  Body,
-  Controller,
   Get,
   Path,
-  Post,
+  Query,
   Request,
-  Response,
   Route,
   Security,
-  SuccessResponse,
   Tags,
 } from "@tsoa/runtime";
-import { SanitisedUser, UserCreationInput, UserModel } from "@/models/User";
-import { NotFoundException } from "./exceptions";
+import { SanitisedUser, UserModel } from "@/models/User";
 import type express from "express";
+import { NotFoundException } from "@/utils/exceptions";
+import { env } from "@/utils";
 
 @Tags("User")
 @Route("users")
-export class UsersController extends Controller {
+export class UsersController {
+  /**
+   * @isInt limit
+   * @maximum limit 100 Fetch at most 100 users at once
+   */
   @Get("/")
-  public async listUser(): Promise<SanitisedUser[]> {
-    const users = await UserModel.find().exec();
-    return users.map((u) => u.sanitise());
+  public async list(
+    @Query() limit: number,
+    @Query() cursor?: string
+  ): Promise<UserListing> {
+    const users = await UserModel.listByCursor(limit, cursor);
+    const sanitisedUser = users.map((u) => u.sanitise());
+    const nextUrl = env.resolveAPIPath(
+      `/users?cursor=${sanitisedUser[sanitisedUser.length - 1]._id}`
+    );
+    return {
+      users: sanitisedUser,
+      nextUrl,
+    };
   }
 
   @Security("jwt")
@@ -32,23 +43,17 @@ export class UsersController extends Controller {
     return request.user.sanitise();
   }
 
-  @Get("{userId}")
-  public async getUser(@Path() userId: string): Promise<SanitisedUser> {
-    const user = await UserModel.findById(userId).exec();
+  @Get("{id}")
+  public async get(@Path() id: string): Promise<SanitisedUser> {
+    const user = await UserModel.findById(id).exec();
     if (!user) {
-      throw new NotFoundException("Cannot find user with such ID");
+      throw new NotFoundException(`Cannot find an user with such ID`);
     }
     return user.sanitise();
   }
+}
 
-  @SuccessResponse("200", "Created") // Custom success response
-  @Response("400", "Invalid Input")
-  @Post()
-  public async createUser(
-    @Body() requestBody: UserCreationInput
-  ): Promise<SanitisedUser> {
-    const user = await UserModel.createUser(requestBody);
-    this.setStatus(201);
-    return user.sanitise();
-  }
+interface UserListing {
+  users: SanitisedUser[];
+  nextUrl: string;
 }
