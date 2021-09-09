@@ -11,7 +11,6 @@ const authenticationServiceLogger = logger.child({
  */
 interface AppJWTPayload {
   userId: string;
-  accessScope: string[];
 }
 
 const jwtSecret = env("JWT_SECRET");
@@ -23,7 +22,6 @@ const jwtExpiry = env("JWT_EXPIRY", "1w");
 export function signAccessToken(user: User): string {
   const payload: AppJWTPayload = {
     userId: user._id.toString(),
-    accessScope: user.accessScope,
   };
 
   return jwt.sign(payload, jwtSecret, { expiresIn: jwtExpiry });

@@ -7,6 +7,8 @@ import { mongoose } from "@typegoose/typegoose";
 import expressPino from "express-pino-logger";
 import { env, expressLogger } from "@/utils";
 import errorHandler from "@/controllers/_ErrorHandler";
+import * as firebase from "firebase-admin";
+import firebaseSetting from "./firebaseServiceAccount.json";
 
 export const app = express();
 
@@ -53,3 +55,8 @@ mongoose
       expressLogger.info(`Server listening at http://${apiHost}:${apiPort}`)
     );
   });
+
+firebase.initializeApp({
+  // @ts-ignore
+  credential: firebase.credential.cert(firebaseSetting),
+});

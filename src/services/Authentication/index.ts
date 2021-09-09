@@ -1,8 +1,7 @@
-export * from "./Google";
 export * from "./JWT";
-export * from "./Local";
+export * from "./Firebase";
 
-export type AuthenticationResult = {
+export interface AuthenticationResult {
   token: string;
   isNew: boolean;
-} | null;
+}

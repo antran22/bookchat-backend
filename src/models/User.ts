@@ -1,42 +1,19 @@
 import { requiredProp } from "@/utils/typegoose";
-import {
-  DocumentType,
-  getModelForClass,
-  pre,
-  prop,
-  ReturnModelType,
-} from "@typegoose/typegoose";
-import bcrypt from "bcrypt";
+import { getModelForClass, prop, ReturnModelType } from "@typegoose/typegoose";
 import _ from "lodash";
 import { logger } from "@/utils";
 import { DatabaseModel } from "./_BaseModel";
 import { Types } from "mongoose";
+import type * as firebaseAdmin from "firebase-admin";
 
 const userModelLogger = logger.child({ module: "userModel" });
 
-@pre<User>("save", async function (next) {
-  if (this.isModified("password") || this.isNew) {
-    try {
-      // noinspection JSPotentiallyInvalidUsageOfClassThis
-      this.password = await bcrypt.hash(this.password, 10);
-    } catch (error: any) {
-      next(error);
-    }
-  }
-  return next();
-})
 export class User extends DatabaseModel {
-  @requiredProp({ unique: true })
-  email!: string;
+  @requiredProp()
+  firebaseId!: string;
 
   @requiredProp()
-  fullName!: string;
-
-  @prop({ default: "" })
-  password!: string;
-
-  @prop({ default: [], type: () => [String] })
-  accessScope!: string[];
+  displayName!: string;
 
   @prop({ default: "other" })
   gender!: string;
@@ -50,30 +27,30 @@ export class User extends DatabaseModel {
   @prop()
   dateOfBirth?: Date;
 
-  public async isPasswordValid(
-    this: DocumentType<User>,
-    passwordForValidation: string
-  ): Promise<boolean> {
-    return bcrypt.compare(passwordForValidation, this.password);
-  }
-
   sanitise(): SanitisedUser {
     return _.omit(this.toJSON(), "password", "accessScope", "updatedAt", "__v");
   }
 
-  static async createUser(input: UserCreationInput): Promise<User> {
+  static async createUser(input: firebaseAdmin.auth.UserRecord): Promise<User> {
     userModelLogger.info({ input }, `Creating new User`);
-    return UserModel.create(input);
+    const { uid, displayName, photoURL } = input;
+    return UserModel.create({
+      firebaseId: uid,
+      displayName,
+      avatar: photoURL,
+    });
   }
 
   static async getUserOrCreateNew(
-    input: UserCreationInput
+    input: firebaseAdmin.auth.UserRecord
   ): Promise<{ user: User; isNew: boolean }> {
     userModelLogger.info(
       { input },
       `Looking for user with given creation input.`
     );
-    const user = await UserModel.findOne().where("email", input.email).exec();
+    const user = await UserModel.findOne()
+      .where("firebaseId", input.uid)
+      .exec();
     if (!user) {
       const newUser = await UserModel.createUser(input);
       return { user: newUser, isNew: true };
@@ -99,18 +76,7 @@ export class User extends DatabaseModel {
     return await query.limit(limit).exec();
   }
 }
-export interface UserCreationInput {
-  email: string;
-  fullName: string;
-  password?: string;
-  gender?: string;
-  avatar?: string;
-  bio?: string;
-  dateOfBirth?: Date;
-}
-export type SanitisedUser = Omit<
-  User,
-  "password" | "accessScope" | "updatedAt" | "__v"
->;
+
+export type SanitisedUser = Omit<User, "firebaseId" | "updatedAt" | "__v">;
 
 export const UserModel = getModelForClass(User);

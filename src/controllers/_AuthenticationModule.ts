@@ -1,10 +1,6 @@
 import type express from "express";
 import { decodeJWTToken } from "@/services/Authentication";
-import {
-  BadRequestException,
-  ForbiddenException,
-  UnauthorizedException,
-} from "@/utils/exceptions";
+import { BadRequestException, UnauthorizedException } from "@/utils/exceptions";
 import { User, UserModel } from "@/models/User";
 import _ from "lodash";
 
@@ -36,16 +32,6 @@ export async function expressAuthentication(
     const jwtPayload = await decodeJWTToken(token);
     if (!jwtPayload) {
       throw new UnauthorizedException("Invalid access token supplied");
-    }
-
-    if (scopes) {
-      for (let scope of scopes) {
-        if (!jwtPayload.accessScope.includes(scope)) {
-          throw new ForbiddenException(
-            "Access token has insufficient permission"
-          );
-        }
-      }
     }
 
     const user = await UserModel.findById(jwtPayload.userId);
