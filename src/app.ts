@@ -8,7 +8,6 @@ import expressPino from "express-pino-logger";
 import { env, expressLogger } from "@/utils";
 import errorHandler from "@/controllers/_ErrorHandler";
 import * as firebase from "firebase-admin";
-import firebaseSetting from "./firebaseServiceAccount.json";
 
 export const app = express();
 
@@ -58,5 +57,5 @@ mongoose
 
 firebase.initializeApp({
   // @ts-ignore
-  credential: firebase.credential.cert(firebaseSetting),
+  credential: firebase.credential.cert("firebaseServiceAccount.json"),
 });

@@ -4,4 +4,4 @@ node_modules
 dist
 build
 .idea
-src/firebaseServiceAccount.json
+firebaseServiceAccount.json

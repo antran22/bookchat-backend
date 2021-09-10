@@ -1,0 +1,11 @@
+*
+
+!src
+src/documentations
+src/generated
+
+!package*.json
+!tsconfig.json
+!tsoa.json
+
+**/*.DS_Store
