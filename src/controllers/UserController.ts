@@ -40,6 +40,11 @@ export class UsersController {
   ): Promise<UserListing> {
     const users = await UserModel.listByCursor(limit, cursor);
     const sanitisedUser = users.map((u) => u.sanitise());
+    if (!sanitisedUser || sanitisedUser.length === 0) {
+      return {
+        users: sanitisedUser,
+      };
+    }
     const lastUserID = sanitisedUser[sanitisedUser.length - 1]._id;
     const nextUrl = env.resolveAPIPath(
       `/users?cursor=${lastUserID}&limit=${limit}`
@@ -109,5 +114,5 @@ export class UsersController {
 
 interface UserListing {
   users: SanitisedUser[];
-  nextUrl: string;
+  nextUrl?: string;
 }

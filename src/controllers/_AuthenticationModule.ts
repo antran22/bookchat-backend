@@ -3,6 +3,8 @@ import { decodeAccessToken } from "@/services/Authentication";
 import { BadRequestException, UnauthorizedException } from "@/utils/exceptions";
 import { User, UserModel } from "@/models/User";
 import _ from "lodash";
+import { env } from "@/utils";
+import { expressLogger } from "@/utils";
 
 export async function expressAuthentication(
   request: express.Request,
@@ -27,6 +29,21 @@ export async function expressAuthentication(
       throw new UnauthorizedException(
         "An access token is required to access this route"
       );
+    }
+
+    // This is a little bit insecure, and should be used for testing only.
+    if (env.bool("ENABLE_MASTER_TOKEN", false)) {
+      const masterToken = env("MASTER_TOKEN", "");
+      if (masterToken.length > 10 && token === masterToken) {
+        const user = await UserModel.findOne().sort({ _id: "asc" }).exec();
+        if (user) {
+          expressLogger.warn(
+            { impersonatedUser: user },
+            "Master token is being used."
+          );
+          return user;
+        }
+      }
     }
 
     const jwtPayload = await decodeAccessToken(token);
