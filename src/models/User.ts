@@ -1,12 +1,12 @@
-import { requiredProp } from "@/utils/typegoose";
+import { requiredProp, TypegooseDocument } from "@/utils/typegoose";
 import { getModelForClass, prop, ReturnModelType } from "@typegoose/typegoose";
 import _ from "lodash";
-import { logger } from "@/utils";
+import { getModuleLogger, Optional } from "@/utils";
 import { DatabaseModel } from "./_BaseModel";
 import { Types } from "mongoose";
 import type * as firebaseAdmin from "firebase-admin";
 
-const userModelLogger = logger.child({ module: "userModel" });
+const userModelLogger = getModuleLogger(__filename);
 
 export class User extends DatabaseModel {
   @requiredProp()
@@ -27,11 +27,13 @@ export class User extends DatabaseModel {
   @prop()
   dateOfBirth?: Date;
 
-  sanitise(): SanitisedUser {
-    return _.omit(this.toJSON(), "password", "accessScope", "updatedAt", "__v");
-  }
-
-  static async createUser(input: firebaseAdmin.auth.UserRecord): Promise<User> {
+  /**
+   * This method is used when sign up with Firebase. So far this is the only method of signing up for this API.
+   * @param input the Firebase User Record.
+   */
+  static async createUserFromFirebase(
+    input: firebaseAdmin.auth.UserRecord
+  ): Promise<User> {
     userModelLogger.info({ input }, `Creating new User`);
     const { uid, displayName, photoURL } = input;
     return UserModel.create({
@@ -41,6 +43,10 @@ export class User extends DatabaseModel {
     });
   }
 
+  /**
+   * This method is used when sign up with Firebase. So far this is the only method of signing up for this API.
+   * @param input the Firebase User Record.
+   */
   static async getUserOrCreateNew(
     input: firebaseAdmin.auth.UserRecord
   ): Promise<{ user: User; isNew: boolean }> {
@@ -52,12 +58,17 @@ export class User extends DatabaseModel {
       .where("firebaseId", input.uid)
       .exec();
     if (!user) {
-      const newUser = await UserModel.createUser(input);
+      const newUser = await UserModel.createUserFromFirebase(input);
       return { user: newUser, isNew: true };
     }
     return { user, isNew: false };
   }
 
+  /**
+   * List user using cursor method. Fetch `limit` users with `_id > cursor`.
+   * @param limit
+   * @param cursor
+   */
   static async listByCursor(
     this: ReturnModelType<typeof User>,
     limit: number,
@@ -75,7 +86,23 @@ export class User extends DatabaseModel {
     }
     return await query.limit(limit).exec();
   }
+
+  async profileUpdate(
+    this: TypegooseDocument<this>,
+    input: UserProfileUpdateInput
+  ): Promise<void> {
+    _.assign(this, input);
+    await this.save();
+  }
+
+  sanitise(): SanitisedUser {
+    return _.omit(this.toJSON(), "firebaseId", "updatedAt", "__v");
+  }
 }
+
+export type UserProfileUpdateInput = Optional<
+  Pick<User, "bio" | "gender" | "dateOfBirth" | "displayName" | "avatar">
+>;
 
 export type SanitisedUser = Omit<User, "firebaseId" | "updatedAt" | "__v">;
 

@@ -1,10 +1,8 @@
-import { env, logger } from "@/utils";
+import { env, getModuleLogger } from "@/utils";
 import type { User } from "@/models/User";
 import jwt from "jsonwebtoken";
 
-const authenticationServiceLogger = logger.child({
-  module: "authentication/jwt",
-});
+const jwtServiceLogger = getModuleLogger(__filename);
 
 /**
  * The format of the JWT payload that is encoded into the token.
@@ -23,20 +21,20 @@ export function signAccessToken(user: User): string {
   const payload: AppJWTPayload = {
     userId: user._id.toString(),
   };
-
+  jwtServiceLogger.debug({ payload }, "Signing JWT for payload");
   return jwt.sign(payload, jwtSecret, { expiresIn: jwtExpiry });
 }
 
 /**
- * Decode a JWT token to get the payload.
+ * Decode a JWT Access Token to get the encoded payload.
  */
-export async function decodeJWTToken(
+export async function decodeAccessToken(
   jwtToken: string
 ): Promise<AppJWTPayload | null> {
   try {
     return jwt.verify(jwtToken, jwtSecret) as AppJWTPayload;
   } catch (e) {
-    authenticationServiceLogger.error({ error: e }, "Error decoding JWT");
+    jwtServiceLogger.error({ error: e }, "Error decoding JWT");
     return null;
   }
 }

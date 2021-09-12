@@ -5,9 +5,11 @@ import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "./generated/routes";
 import { mongoose } from "@typegoose/typegoose";
 import expressPino from "express-pino-logger";
-import { env, expressLogger } from "@/utils";
+import { env, expressLogger, NodeEnv } from "@/utils";
 import errorHandler from "@/controllers/_ErrorHandler";
 import * as firebase from "firebase-admin";
+import { UserModel } from "@/models/User";
+import { signAccessToken } from "@/services/Authentication";
 
 export const app = express();
 
@@ -37,6 +39,7 @@ const swaggerLogHandler: express.Handler = async (req, res) => {
   );
 };
 app.use("/_docs", swaggerUi.serve, swaggerLogHandler);
+app.use("/_uploads", express.static("_uploads"));
 
 RegisterRoutes(app);
 
@@ -46,16 +49,27 @@ const apiPort = env.int("API_PORT", 3000);
 const apiHost = env("API_HOST", "0.0.0.0");
 const databaseUrl = env("MONGO_URL", "mongodb://localhost:27017/bookchat");
 
-mongoose
-  .connect(databaseUrl, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    expressLogger.info(`Connected to database at ${databaseUrl}`);
-    app.listen(apiPort, apiHost, () =>
-      expressLogger.info(`Server listening at http://${apiHost}:${apiPort}`)
-    );
-  });
-
 firebase.initializeApp({
   // @ts-ignore
   credential: firebase.credential.cert("firebaseServiceAccount.json"),
 });
+expressLogger.info("Connected to Firebase Admin");
+
+(async function () {
+  await mongoose.connect(databaseUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+
+  expressLogger.info(`Connected to database at ${databaseUrl}`);
+  app.listen(apiPort, apiHost, () =>
+    expressLogger.info(`Server listening at http://${apiHost}:${apiPort}`)
+  );
+
+  if (env.isNodeEnv(NodeEnv.DEVELOPMENT)) {
+    const testUser = await UserModel.findOne().exec();
+    if (testUser) {
+      console.log("Test user Access Token: ", signAccessToken(testUser));
+    }
+  }
+})();

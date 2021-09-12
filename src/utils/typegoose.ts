@@ -1,4 +1,4 @@
-import {DocumentType, prop} from "@typegoose/typegoose";
+import { DocumentType, prop } from "@typegoose/typegoose";
 import type {
   ArrayPropOptions,
   BasePropOptions,
@@ -8,6 +8,7 @@ import type {
   PropOptionsForString,
   VirtualOptions,
 } from "@typegoose/typegoose/lib/types";
+import { IObjectWithTypegooseFunction } from "@typegoose/typegoose/lib/types";
 import mongoose from "mongoose";
 
 type PropOptions =
@@ -21,7 +22,14 @@ type PropOptions =
 export const requiredProp = (options?: PropOptions) =>
   prop({ ...options, required: true });
 
-export type MongooseModel<T> = mongoose.Model<
+export type TypegooseModel<T> = mongoose.Model<
   DocumentType<T, BeAnObject>,
   BeAnObject
 >;
+
+export type TypegooseDocument<T extends { _id: any }> = mongoose.Document<
+  T["_id"],
+  BeAnObject
+> &
+  T &
+  IObjectWithTypegooseFunction;

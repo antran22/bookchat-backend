@@ -42,7 +42,7 @@ const errorHandler: express.ErrorRequestHandler = (err, req, res, next) => {
     );
   }
   if (err instanceof Error) {
-    expressLogger.error({ error: err }, `Internal Error for ${req.path}:`);
+    expressLogger.error({ error: err }, `Uncaught Internal Error for ${req.path}:`);
     return res.status(500).json(
       filterErrorJSON({
         title: "Internal Server Error",

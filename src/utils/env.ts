@@ -3,14 +3,14 @@ import { join as pathJoin, resolve as pathResolve } from "path";
 import _ from "lodash";
 import url from "url";
 import { parseBoolean } from "./helpers";
-import logger from "./logging";
+import { getModuleLogger } from "./logging";
 
 const envPath = pathResolve(process.cwd(), process.env.ENV_FILE ?? ".env");
 const environment = dotenv.config({
   path: envPath,
 });
 
-const envLogger = logger.child({ module: "env" });
+const envLogger = getModuleLogger(__filename);
 
 envLogger.info(`Loaded ENV variables from ${envPath}`);
 envLogger.info(
@@ -87,4 +87,4 @@ env.resolveAPIPath = (path: string): string => {
   return new url.URL(path, env("API_ROOT_URL")).href;
 };
 
-export default env;
+export { env };

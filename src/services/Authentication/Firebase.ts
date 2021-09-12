@@ -1,13 +1,11 @@
 import * as firebase from "firebase-admin";
 import type { AuthenticationResult } from "./index";
-import { logger } from "@/utils";
+import { getModuleLogger } from "@/utils";
 import { UserModel } from "@/models/User";
 import { signAccessToken } from "./index";
 import { UnauthorizedException } from "@/utils/exceptions";
 
-const firebaseAuthenticationLogger = logger.child({
-  module: "authentication/firebase",
-});
+const firebaseAuthenticationLogger = getModuleLogger(__filename);
 
 export async function authenticateWithFirebase(
   idToken: string

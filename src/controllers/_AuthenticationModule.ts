@@ -1,5 +1,5 @@
 import type express from "express";
-import { decodeJWTToken } from "@/services/Authentication";
+import { decodeAccessToken } from "@/services/Authentication";
 import { BadRequestException, UnauthorizedException } from "@/utils/exceptions";
 import { User, UserModel } from "@/models/User";
 import _ from "lodash";
@@ -29,12 +29,12 @@ export async function expressAuthentication(
       );
     }
 
-    const jwtPayload = await decodeJWTToken(token);
+    const jwtPayload = await decodeAccessToken(token);
     if (!jwtPayload) {
       throw new UnauthorizedException("Invalid access token supplied");
     }
 
-    const user = await UserModel.findById(jwtPayload.userId);
+    const user = await UserModel.findById(jwtPayload.userId).exec();
     if (!user) {
       throw new UnauthorizedException("Invalid access token supplied");
     }

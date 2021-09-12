@@ -3,5 +3,6 @@ documentations
 node_modules
 dist
 build
+_uploads
 .idea
 firebaseServiceAccount.json
