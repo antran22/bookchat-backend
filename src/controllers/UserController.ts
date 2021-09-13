@@ -1,9 +1,10 @@
 import {
-  Get,
-  Put,
-  Post,
-  Path,
   Body,
+  Delete,
+  Get,
+  Path,
+  Post,
+  Put,
   Query,
   Request,
   Route,
@@ -19,10 +20,11 @@ import {
 import type express from "express";
 import { BadRequestException, NotFoundException } from "@/utils/exceptions";
 import {
-  multerFileHaveMatchingMimeType,
   env,
+  multerFileHaveMatchingMimeType,
   saveMulterFileAndGetStaticUrl,
 } from "@/utils";
+import type { DeleteResult, Listing } from "./_ControllerUtils";
 
 @Tags("User")
 @Route("users")
@@ -37,20 +39,20 @@ export class UsersController {
   public async list(
     @Query() limit: number,
     @Query() cursor?: string
-  ): Promise<UserListing> {
+  ): Promise<Listing<SanitisedUser>> {
     const users = await UserModel.listByCursor(limit, cursor);
-    const sanitisedUser = users.map((u) => u.sanitise());
-    if (!sanitisedUser || sanitisedUser.length === 0) {
+    const sanitisedUsers = users.map((u) => u.sanitise());
+    if (!sanitisedUsers || sanitisedUsers.length === 0) {
       return {
-        users: sanitisedUser,
+        data: sanitisedUsers,
       };
     }
-    const lastUserID = sanitisedUser[sanitisedUser.length - 1]._id;
+    const lastUserID = sanitisedUsers[sanitisedUsers.length - 1]._id;
     const nextUrl = env.resolveAPIPath(
       `/users?cursor=${lastUserID}&limit=${limit}`
     );
     return {
-      users: sanitisedUser,
+      data: sanitisedUsers,
       nextUrl,
     };
   }
@@ -77,6 +79,21 @@ export class UsersController {
   ): Promise<SanitisedUser> {
     await request.user.profileUpdate(input);
     return request.user.sanitise();
+  }
+
+  /**
+   * Delete your personal profile
+   */
+  @Security("jwt")
+  @Delete("me")
+  public async deletePersonalAccount(
+    @Request() request: express.Request
+  ): Promise<DeleteResult<SanitisedUser>> {
+    const sanitisedUserRecord = request.user.sanitise();
+    await request.user.delete();
+    return {
+      data: sanitisedUserRecord,
+    };
   }
 
   /**
@@ -110,9 +127,4 @@ export class UsersController {
     }
     return user.sanitise();
   }
-}
-
-interface UserListing {
-  users: SanitisedUser[];
-  nextUrl?: string;
 }
