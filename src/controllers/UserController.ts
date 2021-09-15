@@ -25,6 +25,7 @@ import {
   saveMulterFileAndGetStaticUrl,
 } from "@/utils";
 import type { DeleteResult, Listing } from "./_ControllerUtils";
+import {listUserByCursor} from "@/services/User";
 
 @Tags("User")
 @Route("users")
@@ -40,7 +41,7 @@ export class UsersController {
     @Query() limit: number,
     @Query() cursor?: string
   ): Promise<Listing<SanitisedUser>> {
-    const users = await UserModel.listByCursor(limit, cursor);
+    const users = await listUserByCursor(limit, cursor);
     const sanitisedUsers = users.map((u) => u.sanitise());
     if (!sanitisedUsers || sanitisedUsers.length === 0) {
       return {

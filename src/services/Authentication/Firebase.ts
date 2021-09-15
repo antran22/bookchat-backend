@@ -1,9 +1,9 @@
 import * as firebase from "firebase-admin";
 import type { AuthenticationResult } from "./index";
-import { getModuleLogger } from "@/utils";
-import { UserModel } from "@/models/User";
 import { signAccessToken } from "./index";
+import { getModuleLogger } from "@/utils";
 import { UnauthorizedException } from "@/utils/exceptions";
+import { getUserOrCreateNew } from "@/services/User";
 
 const firebaseAuthenticationLogger = getModuleLogger(__filename);
 
@@ -17,7 +17,7 @@ export async function authenticateWithFirebase(
       "Verification successful"
     );
     const firebaseUser = await firebase.auth().getUser(decodedIdToken.uid);
-    const { user, isNew } = await UserModel.getUserOrCreateNew(firebaseUser);
+    const { user, isNew } = await getUserOrCreateNew(firebaseUser);
     return {
       token: signAccessToken(user),
       isNew,
