@@ -72,4 +72,17 @@ expressLogger.info("Connected to Firebase Admin");
       console.log("Test user Access Token: ", signAccessToken(testUser));
     }
   }
+
+  // await UserModel.create({
+  //   firebaseId: "1",
+  //   displayName: "An",
+  //   gender: "Helicopter",
+  //   dateOfBirth: new Date("2001/2/22"),
+  // });
+  // await UserModel.create({
+  //   firebaseId: "2",
+  //   displayName: "Binh",
+  //   gender: "Abram Tank",
+  //   dateOfBirth: new Date("2001/2/23"),
+  // });
 })();

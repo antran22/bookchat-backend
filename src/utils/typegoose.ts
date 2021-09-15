@@ -1,4 +1,4 @@
-import { DocumentType, prop } from "@typegoose/typegoose";
+import { DocumentType, prop, Ref } from "@typegoose/typegoose";
 import type {
   ArrayPropOptions,
   BasePropOptions,
@@ -10,6 +10,7 @@ import type {
 } from "@typegoose/typegoose/lib/types";
 import { IObjectWithTypegooseFunction } from "@typegoose/typegoose/lib/types";
 import mongoose from "mongoose";
+import _ from "lodash";
 
 type PropOptions =
   | BasePropOptions
@@ -33,3 +34,16 @@ export type TypegooseDocument<T extends { _id: any }> = mongoose.Document<
 > &
   T &
   IObjectWithTypegooseFunction;
+
+export function getReferenceIdString<T extends { _id: any }>(
+  ref: Ref<T>
+): string {
+  if (!ref) {
+    return "";
+  }
+  if (_.isString(ref)) {
+    return ref;
+  }
+  // @ts-ignore
+  return ref._id.toString();
+}

@@ -5,7 +5,7 @@ import { Optional } from "@/utils";
 import { DatabaseModel } from "./_BaseModel";
 
 export class User extends DatabaseModel {
-  @requiredProp()
+  @requiredProp({unique: true})
   firebaseId!: string;
 
   @requiredProp()
@@ -30,7 +30,6 @@ export class User extends DatabaseModel {
     _.assign(this, input);
     await this.save();
   }
-
 
   sanitise(): SanitisedUser {
     return _.omit(this.toJSON(), "firebaseId", "updatedAt", "__v");
