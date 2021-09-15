@@ -1,7 +1,6 @@
 import { DatabaseModel } from "./_BaseModel";
-import { Types } from "mongoose";
 import _ from "lodash";
-import { prop, getModelForClass } from "@typegoose/typegoose";
+import { prop, getModelForClass, Ref } from "@typegoose/typegoose";
 import { User } from "./User"
 
 export class Book extends DatabaseModel {
@@ -12,13 +11,18 @@ export class Book extends DatabaseModel {
     isnb!: string;
 
     @prop()
-    description!: string
+    description!: string;
 
     @prop()
-    publisher!: string
+    publisher!: string;
 
-    @prop({ref: () => User})
-    author!: Types.ObjectId
+    @prop({
+        ref: User,
+        foreignField: 'parent',
+        localField: '_id',
+        justOne: true
+    })
+    author!: Ref<User>;
 
     sanitise(): SanitisedBook {
         return _.omit(this.toJSON(), "__v");
