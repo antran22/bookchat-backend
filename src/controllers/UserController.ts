@@ -13,7 +13,8 @@ import {
   UploadedFile,
 } from "@tsoa/runtime";
 import {
-  SanitisedUser,
+  User,
+  UserJSON,
   UserModel,
   UserProfileUpdateInput,
 } from "@/models/User";
@@ -21,11 +22,12 @@ import type express from "express";
 import { BadRequestException, NotFoundException } from "@/utils/exceptions";
 import {
   env,
+  getLastID,
   multerFileHaveMatchingMimeType,
-  saveMulterFileAndGetStaticUrl,
+  multerFileToStaticUrl,
 } from "@/utils";
 import type { DeleteResult, Listing } from "./_ControllerUtils";
-import {listUserByCursor} from "@/services/User";
+import { listUserByCursor } from "@/services/User";
 
 @Tags("User")
 @Route("users")
@@ -40,18 +42,13 @@ export class UsersController {
   public async list(
     @Query() limit: number,
     @Query() cursor?: string
-  ): Promise<Listing<SanitisedUser>> {
-    const users = await listUserByCursor(limit, cursor);
-    const sanitisedUsers = users.map((u) => u.sanitise());
-    if (!sanitisedUsers || sanitisedUsers.length === 0) {
-      return {
-        data: sanitisedUsers,
-      };
-    }
-    const lastUserID = sanitisedUsers[sanitisedUsers.length - 1]._id;
-    const nextUrl = env.resolveAPIPath(
-      `/users?cursor=${lastUserID}&limit=${limit}`
-    );
+  ): Promise<Listing<UserJSON>> {
+    const users = await listUserByCursor({ limit, cursor });
+    const sanitisedUsers = await User.jsonifyAll(users);
+    const lastUserID = getLastID(sanitisedUsers);
+    const nextUrl = lastUserID
+      ? env.resolveAPIPath("/users", { cursor: lastUserID, limit })
+      : undefined;
     return {
       data: sanitisedUsers,
       nextUrl,
@@ -65,8 +62,8 @@ export class UsersController {
   @Get("me")
   public async getPersonalProfile(
     @Request() request: express.Request
-  ): Promise<SanitisedUser> {
-    return request.user.sanitise();
+  ): Promise<UserJSON> {
+    return request.user.jsonify();
   }
 
   /**
@@ -77,9 +74,9 @@ export class UsersController {
   public async updatePersonalProfile(
     @Request() request: express.Request,
     @Body() input: UserProfileUpdateInput
-  ): Promise<SanitisedUser> {
+  ): Promise<UserJSON> {
     await request.user.profileUpdate(input);
-    return request.user.sanitise();
+    return request.user.jsonify();
   }
 
   /**
@@ -89,11 +86,11 @@ export class UsersController {
   @Delete("me")
   public async deletePersonalAccount(
     @Request() request: express.Request
-  ): Promise<DeleteResult<SanitisedUser>> {
-    const sanitisedUserRecord = request.user.sanitise();
+  ): Promise<DeleteResult<UserJSON>> {
+    const sanitisedUserRecord = await request.user.jsonify();
     await request.user.delete();
     return {
-      data: sanitisedUserRecord,
+      deleted: sanitisedUserRecord,
     };
   }
 
@@ -105,15 +102,15 @@ export class UsersController {
   public async updatePersonalProfilePicture(
     @Request() request: express.Request,
     @UploadedFile() avatar: Express.Multer.File
-  ): Promise<SanitisedUser> {
+  ): Promise<UserJSON> {
     if (!multerFileHaveMatchingMimeType(avatar, "image/.*")) {
       throw new BadRequestException(
         "Invalid file type for field avatar, expecting image/*"
       );
     }
-    request.user.avatar = saveMulterFileAndGetStaticUrl(avatar);
+    request.user.avatar = await multerFileToStaticUrl(avatar);
     await request.user.save();
-    return request.user.sanitise();
+    return request.user.jsonify();
   }
 
   /**
@@ -121,11 +118,11 @@ export class UsersController {
    * @param id
    */
   @Get("{id}")
-  public async get(@Path() id: string): Promise<SanitisedUser> {
+  public async get(@Path() id: string): Promise<UserJSON> {
     const user = await UserModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException(`Cannot find an user with such ID`);
     }
-    return user.sanitise();
+    return user.jsonify();
   }
 }

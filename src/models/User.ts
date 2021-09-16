@@ -31,7 +31,7 @@ export class User extends DatabaseModel {
     await this.save();
   }
 
-  sanitise(): SanitisedUser {
+  async jsonify(): Promise<UserJSON> {
     return _.omit(this.toJSON(), "firebaseId", "updatedAt", "__v");
   }
 }
@@ -40,6 +40,6 @@ export type UserProfileUpdateInput = Optional<
   Pick<User, "bio" | "gender" | "dateOfBirth" | "displayName" | "avatar">
 >;
 
-export type SanitisedUser = Omit<User, "firebaseId" | "updatedAt" | "__v">;
+export type UserJSON = Omit<User, "firebaseId" | "updatedAt" | "__v">;
 
 export const UserModel = getModelForClass(User);

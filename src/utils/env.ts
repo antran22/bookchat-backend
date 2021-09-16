@@ -83,8 +83,14 @@ env.projectPath = (...paths: string[]): string => {
   return pathJoin(process.cwd(), ...paths);
 };
 
-env.resolveAPIPath = (path: string): string => {
-  return new url.URL(path, env("API_ROOT_URL")).href;
+env.resolveAPIPath = (path: string, queries?: Record<string, any>): string => {
+  const uri = new url.URL(path, env("API_ROOT_URL"));
+  if (queries) {
+    _.forOwn(queries, (value, key) => {
+      uri.searchParams.set(key, `${value}`);
+    });
+  }
+  return uri.href;
 };
 
 export { env };

@@ -1,47 +1,49 @@
 import { Types } from "mongoose";
-import { Message, MessageModel } from "@/models/Message";
+import { Message, MessageJSON, MessageModel } from "@/models/Message";
 import { User, UserModel } from "@/models/User";
-import { NotFoundException, saveMulterFileAndGetStaticUrl } from "@/utils";
+import { multipleMulterFilesToStaticUrls, NotFoundException } from "@/utils";
+import { ListInput } from "@/services/_ServiceUtils";
 
 export async function createMessage(
   sender: User,
   recipientId: string,
   content: string,
   attachments: Express.Multer.File[]
-): Promise<Message> {
+): Promise<MessageJSON> {
   if (!(await UserModel.exists({ _id: recipientId }))) {
     throw new NotFoundException("Recipient not found");
   }
-  const attachmentUrls = attachments.map(saveMulterFileAndGetStaticUrl);
-  return MessageModel.create({
+  const attachmentUrls = await multipleMulterFilesToStaticUrls(attachments);
+  const message = await MessageModel.create({
     sender: sender._id,
     recipient: recipientId,
     content,
     attachments: attachmentUrls,
   });
+  return message.jsonify();
 }
 
-export async function revokeMessage(messageId: string): Promise<Message> {
+export async function revokeMessage(messageId: string): Promise<MessageJSON> {
   const message = await MessageModel.findById(messageId).exec();
   if (!message) {
     throw new NotFoundException(`Message with ID ${messageId} not found`);
   }
   message.revoked = true;
   await message.save();
-  return message;
+  return message.jsonify();
 }
 
 /**
  * List Messages by Cursors
  */
 export async function listMessageInConversation(
-  filter: ConversationFilter
-): Promise<Message[]> {
+  input: MessageListInput
+): Promise<MessageJSON[]> {
   let query;
-  if (filter.cursor) {
+  if (input.cursor) {
     query = MessageModel.find({
       _id: {
-        $gt: new Types.ObjectId(filter.cursor),
+        $gt: new Types.ObjectId(input.cursor),
       },
     });
   } else {
@@ -50,21 +52,20 @@ export async function listMessageInConversation(
   query = query.find({
     $or: [
       {
-        sender: filter.firstParticipantId,
-        recipient: filter.secondParticipantId,
+        sender: input.firstParticipantId,
+        recipient: input.secondParticipantId,
       },
       {
-        sender: filter.secondParticipantId,
-        recipient: filter.firstParticipantId,
+        sender: input.secondParticipantId,
+        recipient: input.firstParticipantId,
       },
     ],
   });
-  return await query.limit(filter.limit).exec();
+  const messages = await query.limit(input.limit).exec();
+  return Message.jsonifyAll(messages);
 }
 
-export type ConversationFilter = {
-  limit: number;
-  cursor?: string;
+export interface MessageListInput extends ListInput {
   firstParticipantId: string;
   secondParticipantId: string;
-};
+}
