@@ -28,16 +28,20 @@ export type TypegooseModel<T> = mongoose.Model<
   BeAnObject
 >;
 
-export type TypegooseDocument<T extends { _id: any }> = mongoose.Document<
+interface HaveID {
+  _id: any;
+}
+
+export type PopulatedTypegooseDocument<T extends HaveID> = T | T["_id"];
+
+export type TypegooseDocument<T extends HaveID> = mongoose.Document<
   T["_id"],
   BeAnObject
 > &
   T &
   IObjectWithTypegooseFunction;
 
-export function getReferenceIdString<T extends { _id: any }>(
-  ref: Ref<T>
-): string {
+export function getReferenceIdString<T extends HaveID>(ref: Ref<T>): string {
   if (!ref) {
     return "";
   }
@@ -46,4 +50,12 @@ export function getReferenceIdString<T extends { _id: any }>(
   }
   // @ts-ignore
   return ref._id.toString();
+}
+
+export function getLastID<T extends HaveID>(values?: T[]): string | null {
+  if (!values || values.length === 0) {
+    return null;
+  }
+
+  return values[values.length - 1]._id.toString();
 }

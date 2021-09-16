@@ -4,6 +4,6 @@ export interface Listing<T> {
 }
 
 export interface DeleteResult<T> {
-  data: T;
+  deleted: T;
   message?: string;
 }

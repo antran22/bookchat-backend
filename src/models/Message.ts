@@ -19,7 +19,7 @@ export class Message extends DatabaseModel {
   @prop({ type: () => [String] })
   attachments!: string[];
 
-  sanitise(): SanitisedMessage {
+  async jsonify(): Promise<MessageJSON> {
     const senderId = getReferenceIdString(this.sender);
     const recipientId = getReferenceIdString(this.recipient);
     if (this.revoked) {
@@ -43,7 +43,7 @@ export class Message extends DatabaseModel {
   }
 }
 
-export type SanitisedMessage = {
+export type MessageJSON = {
   _id: string;
   createdAt: Date;
   sender: string;

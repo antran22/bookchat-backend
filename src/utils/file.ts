@@ -17,9 +17,9 @@ if (!fs.existsSync(localUploadDir)) {
   fs.mkdirSync(localUploadDir);
 }
 
-export function saveMulterFileAndGetStaticUrl(
+export async function multerFileToStaticUrl(
   multerFile: Express.Multer.File
-): string {
+): Promise<string> {
   const fileName = uuidV4() + path.extname(multerFile.originalname);
   const filePath = path.join(localUploadDir, fileName);
   const fileWriteStream = fs.createWriteStream(filePath);
@@ -29,6 +29,12 @@ export function saveMulterFileAndGetStaticUrl(
     fileWriteStream.write(multerFile.buffer);
   }
   return env.resolveAPIPath(`_uploads/${fileName}`);
+}
+
+export async function multipleMulterFilesToStaticUrls(
+  multerFiles: Express.Multer.File[]
+): Promise<string[]> {
+  return Promise.all(multerFiles.map(multerFileToStaticUrl));
 }
 
 export function multerFileHaveMatchingMimeType(

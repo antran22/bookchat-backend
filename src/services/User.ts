@@ -1,31 +1,29 @@
 import * as firebaseAdmin from "firebase-admin";
 import { User, UserModel } from "@/models/User";
-import { getModuleLogger } from "@/utils";
+import {BadRequestException, getModuleLogger} from "@/utils";
 import { Types } from "mongoose";
+import { ListInput } from "./_ServiceUtils";
 
 const userServiceLogger = getModuleLogger(__filename);
 
 /**
  * List user using cursor method. Fetch `limit` users with `_id > cursor`.
- * @param limit
- * @param cursor
  */
-export async function listUserByCursor(
-  limit: number,
-  cursor?: string
-): Promise<User[]> {
+export async function listUserByCursor(input: ListUserInput): Promise<User[]> {
   let query;
-  if (cursor) {
+  if (input.cursor) {
     query = UserModel.find({
       _id: {
-        $gt: new Types.ObjectId(cursor),
+        $gt: new Types.ObjectId(input.cursor),
       },
     });
   } else {
     query = UserModel.find();
   }
-  return await query.limit(limit).exec();
+  return await query.limit(input.limit).exec();
 }
+
+export interface ListUserInput extends ListInput {}
 
 /**
  * This method is used when sign up with Firebase. So far this is the only method of signing up for this API.
@@ -35,10 +33,13 @@ export async function createUserFromFirebase(
   input: firebaseAdmin.auth.UserRecord
 ): Promise<User> {
   userServiceLogger.info({ input }, `Creating new User`);
-  const { uid, displayName, photoURL } = input;
+  const { uid, displayName, photoURL, email } = input;
+  if (!displayName && !email) {
+    throw new BadRequestException("Cannot create new User without Email or DisplayName");
+  }
   return UserModel.create({
     firebaseId: uid,
-    displayName,
+    displayName: displayName ?? email,
     avatar: photoURL,
   });
 }
