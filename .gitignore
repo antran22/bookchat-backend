@@ -6,3 +6,4 @@ build
 _uploads
 .idea
 firebaseServiceAccount.json
+coverage

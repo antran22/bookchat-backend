@@ -31,6 +31,6 @@
     "sourceMap": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"],
+  "exclude": ["node_modules", "**/*.test.js", "**/*.spec.ts"],
   "lib": ["es2015"]
 }

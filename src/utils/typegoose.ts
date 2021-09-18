@@ -32,8 +32,6 @@ interface HaveID {
   _id: any;
 }
 
-export type PopulatedTypegooseDocument<T extends HaveID> = T | T["_id"];
-
 export type TypegooseDocument<T extends HaveID> = mongoose.Document<
   T["_id"],
   BeAnObject
