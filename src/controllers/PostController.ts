@@ -1,10 +1,10 @@
 import {
-  Path,
+  Delete,
   FormField,
   Get,
+  Path,
   Post,
   Put,
-  Delete,
   Query,
   Request,
   Route,
@@ -18,11 +18,11 @@ import { env, ForbiddenException, getLastID, NotFoundException } from "@/utils";
 import type { DeleteResult, Listing } from "./_ControllerUtils";
 import {
   createPost,
-  makeUserLikePost,
   listLikeFromPost,
   listPostWithHaveLiked,
-  PostJSONWithHasLiked,
+  makeUserLikePost,
   makeUserUnlikePost,
+  PostJSONWithHasLiked,
 } from "@/services/Post";
 
 @Tags("Post")
@@ -95,15 +95,13 @@ export class PostsController {
   }
 
   /**
-   * All the likes of a post
-   * @isInt limit
-   * @maximum limit 100 Fetch at most 100 likes at once
+   * Like a post
    */
   @Security("jwt")
   @Put("/{postId}/likes")
   public async likePost(
     @Request() request: express.Request,
-    @Path() postId: string,
+    @Path() postId: string
   ): Promise<PostLikeJSON> {
     if (!(await PostModel.exists({ _id: postId }))) {
       throw new NotFoundException(`Cannot find Post with ID ${postId}`);
@@ -112,7 +110,7 @@ export class PostsController {
   }
 
   /**
-   * All the likes of a post
+   * Dislike a post
    * @isInt limit
    * @maximum limit 100 Fetch at most 100 likes at once
    */
@@ -120,7 +118,7 @@ export class PostsController {
   @Delete("/{postId}/likes")
   public async unlikePost(
     @Request() request: express.Request,
-    @Path() postId: string,
+    @Path() postId: string
   ): Promise<DeleteResult<PostLikeJSON>> {
     if (!(await PostModel.exists({ _id: postId }))) {
       throw new NotFoundException(`Cannot find Post with ID ${postId}`);
@@ -153,7 +151,11 @@ export class PostsController {
     @FormField() content: string,
     @UploadedFiles() attachments: Express.Multer.File[]
   ): Promise<PostJSON> {
-    const post = await createPost({ author: request.user, content, attachments });
+    const post = await createPost({
+      author: request.user,
+      content,
+      attachments,
+    });
     // Todo: Notify SocketIO about this post
     return post;
   }
@@ -177,3 +179,5 @@ export class PostsController {
     return post.jsonify();
   }
 }
+
+

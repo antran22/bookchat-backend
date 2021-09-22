@@ -3,16 +3,20 @@ import { Types } from "mongoose";
 import { ListInput } from "../_ServiceUtils";
 import { User } from "@/models/User";
 import { DeleteResult } from "@/controllers/_ControllerUtils";
-import { NotFoundException } from "@/utils";
+import { BadRequestException } from "@/utils";
 
 export async function makeUserLikePost(
   input: CreatePostLikeInput
 ): Promise<PostLikeJSON> {
-  const postLike = await PostLikeModel.create({
-    post: input.postId,
-    user: input.user._id,
-  });
-  return postLike.jsonify();
+  try {
+    const postLike = await PostLikeModel.create({
+      post: input.postId,
+      user: input.user._id,
+    });
+    return postLike.jsonify();
+  } catch (e) {
+    throw new BadRequestException("User have liked post already");
+  }
 }
 
 export interface CreatePostLikeInput {
@@ -28,7 +32,9 @@ export async function makeUserUnlikePost(
     user: input.user._id,
   }).exec();
   if (!postLike) {
-    throw new NotFoundException(`Cannot find Post with ID ${input.postId}`);
+    throw new BadRequestException(
+      `User haven't liked post yet ${input.postId}`
+    );
   }
   return {
     deleted: await postLike.jsonify(),

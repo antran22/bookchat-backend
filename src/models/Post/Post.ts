@@ -1,7 +1,7 @@
 import { requiredProp, TypegooseDocument } from "@/utils/typegoose";
-import {getModelForClass, isDocument, prop, Ref} from "@typegoose/typegoose";
+import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 import { DatabaseModel } from "../_BaseModel";
-import { UserJSON, User } from "../User";
+import { User, UserJSON } from "../User";
 
 export class Post extends DatabaseModel {
   @requiredProp({ ref: () => User })
@@ -14,10 +14,10 @@ export class Post extends DatabaseModel {
   attachments!: string[];
 
   async jsonify(this: TypegooseDocument<Post>): Promise<PostJSON> {
-    await this.populate("author").execPopulate();
-    const authorJSON = isDocument(this.author)
-      ? await this.author.jsonify()
-      : undefined;
+    await this.populateFields(["author"]);
+
+    const authorJSON = await User.jsonifyReferenceField(this.author);
+
     return {
       author: authorJSON,
       content: this.content,
