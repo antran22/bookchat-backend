@@ -15,7 +15,7 @@ import {
 import { PostJSON, PostLikeJSON, PostModel } from "@/models/Post";
 import type express from "express";
 import { env, ForbiddenException, getLastID, NotFoundException } from "@/utils";
-import type { DeleteResult, Listing } from "./_ControllerUtils";
+import type { DeleteResult, Listing } from "../_ControllerUtils";
 import {
   createPost,
   listLikeFromPost,

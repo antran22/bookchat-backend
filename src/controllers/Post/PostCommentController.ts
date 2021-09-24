@@ -14,7 +14,7 @@ import {
 import { PostCommentJSON, PostLikeJSON, PostModel } from "@/models/Post";
 import type express from "express";
 import { env, getLastID, NotFoundException } from "@/utils";
-import type { DeleteResult, Listing } from "./_ControllerUtils";
+import type { DeleteResult, Listing } from "../_ControllerUtils";
 import {
   createPostComment,
   CreatePostCommentInput,

@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { ListInput } from "../_ServiceUtils";
+import { ListOptions } from "../_ServiceUtils";
 import { User } from "@/models/User";
 import { DeleteResult } from "@/controllers/_ControllerUtils";
 import { ForbiddenException, NotFoundException } from "@/utils";
@@ -84,7 +84,7 @@ export async function listCommentFromPost(
   return PostComment.jsonifyAll(comments, ["user"]);
 }
 
-export interface ListPostCommentInput extends ListInput {
+export interface ListPostCommentInput extends ListOptions {
   post: string;
 }
 

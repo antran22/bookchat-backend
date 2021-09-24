@@ -1,4 +1,4 @@
-import { ListInput } from "../_ServiceUtils";
+import { ListOptions } from "../_ServiceUtils";
 import { Post, PostJSON, PostModel } from "@/models/Post";
 import { Types } from "mongoose";
 import { User } from "@/models/User";
@@ -26,18 +26,16 @@ interface CreatePostInput {
 export async function listPostWithHaveLiked(
   input: ListPostInput
 ): Promise<PostJSONWithHasLiked[]> {
-  let query;
+  let query = PostModel.find().limit(input.limit);
   if (input.cursor) {
-    query = PostModel.find({
+    query = query.where({
       _id: {
         $gt: new Types.ObjectId(input.cursor),
       },
     });
-  } else {
-    query = PostModel.find();
   }
 
-  const posts = await query.limit(input.limit).exec();
+  const posts = await query.exec();
   const postJSONs = await Post.jsonifyAll(posts);
   return Promise.all(
     postJSONs.map(async (postJSON) => {
@@ -51,7 +49,7 @@ export async function listPostWithHaveLiked(
   );
 }
 
-export interface ListPostInput extends ListInput {
+export interface ListPostInput extends ListOptions {
   user?: User;
 }
 

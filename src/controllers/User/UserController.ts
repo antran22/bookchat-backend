@@ -26,7 +26,7 @@ import {
   multerFileHaveMatchingMimeType,
   multerFileToStaticUrl,
 } from "@/utils";
-import type { DeleteResult, Listing } from "./_ControllerUtils";
+import type { DeleteResult, Listing } from "../_ControllerUtils";
 import { listUserByCursor } from "@/services/User";
 
 @Tags("User")

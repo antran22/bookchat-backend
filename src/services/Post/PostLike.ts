@@ -1,6 +1,6 @@
 import { PostLike, PostLikeJSON, PostLikeModel } from "@/models/Post";
 import { Types } from "mongoose";
-import { ListInput } from "../_ServiceUtils";
+import { ListOptions } from "../_ServiceUtils";
 import { User } from "@/models/User";
 import { DeleteResult } from "@/controllers/_ControllerUtils";
 import { BadRequestException } from "@/utils";
@@ -45,13 +45,13 @@ export interface DeletePostLikeInput {
   user: User;
 }
 export async function listLikeFromPost(
-  input: ListPostLikeInput
+  options: ListPostLikeOptions
 ): Promise<PostLikeJSON[]> {
   let query;
-  if (input.cursor) {
+  if (options.cursor) {
     query = PostLikeModel.find({
       _id: {
-        $gt: new Types.ObjectId(input.cursor),
+        $gt: new Types.ObjectId(options.cursor),
       },
     });
   } else {
@@ -59,14 +59,14 @@ export async function listLikeFromPost(
   }
 
   const postLikes = await query
-    .where("post", input.post)
-    .limit(input.limit)
+    .where("post", options.post)
+    .limit(options.limit)
     .exec();
 
   return PostLike.jsonifyAll(postLikes, ["user"]);
 }
 
-export interface ListPostLikeInput extends ListInput {
+export interface ListPostLikeOptions extends ListOptions {
   post: string;
 }
 

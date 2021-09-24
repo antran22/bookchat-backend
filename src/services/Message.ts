@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { Message, MessageJSON, MessageModel } from "@/models/Message";
 import { User, UserModel } from "@/models/User";
 import { multipleMulterFilesToStaticUrls, NotFoundException } from "@/utils";
-import { ListInput } from "@/services/_ServiceUtils";
+import { ListOptions } from "@/services/_ServiceUtils";
 
 export async function createMessage(
   sender: User,
@@ -37,13 +37,13 @@ export async function revokeMessage(messageId: string): Promise<MessageJSON> {
  * List Messages by Cursors
  */
 export async function listMessageInConversation(
-  input: MessageListInput
+  options: MessageListOptions
 ): Promise<MessageJSON[]> {
   let query;
-  if (input.cursor) {
+  if (options.cursor) {
     query = MessageModel.find({
       _id: {
-        $gt: new Types.ObjectId(input.cursor),
+        $gt: new Types.ObjectId(options.cursor),
       },
     });
   } else {
@@ -52,20 +52,20 @@ export async function listMessageInConversation(
   query = query.find({
     $or: [
       {
-        sender: input.firstParticipantId,
-        recipient: input.secondParticipantId,
+        sender: options.firstParticipantId,
+        recipient: options.secondParticipantId,
       },
       {
-        sender: input.secondParticipantId,
-        recipient: input.firstParticipantId,
+        sender: options.secondParticipantId,
+        recipient: options.firstParticipantId,
       },
     ],
   });
-  const messages = await query.limit(input.limit).exec();
+  const messages = await query.limit(options.limit).exec();
   return Message.jsonifyAll(messages);
 }
 
-export interface MessageListInput extends ListInput {
+export interface MessageListOptions extends ListOptions {
   firstParticipantId: string;
   secondParticipantId: string;
 }
