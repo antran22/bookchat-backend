@@ -8,25 +8,25 @@ export class Follow extends DatabaseModel {
   follower: Ref<User>;
 
   @requiredProp({ ref: () => User })
-  followedby: Ref<User>;
+  followee: Ref<User>;
 
   async jsonify(
     this: TypegooseDocument<Follow>
   ): Promise<FollowJSON> {
-    await this.populateFields(["follower", "followedby"]);
+    await this.populateFields(["follower", "followee"]);
     const followJSON = await User.jsonifyReferenceField(this.follower)
-    const followedJSON = await User.jsonifyReferenceField(this.followedby)
+    const followedJSON = await User.jsonifyReferenceField(this.followee)
 
     return {
       follower: followJSON,
-      followedby: followedJSON,
+      followee: followedJSON,
     };
   }
 }
 
 export interface FollowJSON {
   follower?: UserJSON;
-  followedby?: UserJSON;
+  followee?: UserJSON;
 }
 
 export const FollowModel = getModelForClass(Follow);

@@ -19,7 +19,7 @@ Table User {
 
   friends "Virtual<User[]>"
   following "Virtual<User[]>"
-  followedBy "Virtual<User[]>"
+  followee "Virtual<User[]>"
 
   reviewedBooks "Virtual<Book[]>"
 
@@ -77,7 +77,7 @@ Table Friendship {
 
 Table Follow {
   follower ObjectID [ref: > User.following, note: "User._id"]
-  followedBy ObjectID [ref: > User.followedBy, note: "User._id"]
+  followee ObjectID [ref: > User.followee, note: "User._id"]
 }
 
 Table Group {
