@@ -1,4 +1,4 @@
-import { requiredProp, TypegooseDocument } from "@/utils/typegoose";
+import { requiredProp } from "@/utils/typegoose";
 import { getModelForClass, Ref } from "@typegoose/typegoose";
 import { DatabaseModel } from "../_BaseModel";
 import { User, UserJSON } from "../User";
