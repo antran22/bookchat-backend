@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { ListOptions } from "../_ServiceUtils";
+import { ListOptions } from "@/models/_BaseModel";
 import { User } from "@/models/User";
 import { DeleteResult } from "@/controllers/_ControllerUtils";
 import { ForbiddenException, NotFoundException } from "@/utils";

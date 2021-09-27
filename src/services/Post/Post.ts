@@ -1,9 +1,8 @@
-import { ListOptions } from "../_ServiceUtils";
 import { Post, PostJSON, PostModel } from "@/models/Post";
-import { Types } from "mongoose";
 import { User } from "@/models/User";
 import { hasUserLikedPost } from "@/services/Post/PostLike";
 import { multipleMulterFilesToStaticUrls, NotFoundException } from "@/utils";
+import { ListOptions } from "@/models/_BaseModel";
 
 export async function createPost(input: CreatePostInput): Promise<PostJSON> {
   const attachmentUrls = await multipleMulterFilesToStaticUrls(
@@ -24,32 +23,25 @@ interface CreatePostInput {
 }
 
 export async function listPostWithHaveLiked(
-  input: ListPostInput
+  options: ListPostOptions
 ): Promise<PostJSONWithHasLiked[]> {
-  let query = PostModel.find().limit(input.limit);
-  if (input.cursor) {
-    query = query.where({
-      _id: {
-        $gt: new Types.ObjectId(input.cursor),
-      },
-    });
-  }
+  const posts = await PostModel.listByCursor(options).exec();
 
-  const posts = await query.exec();
   const postJSONs = await Post.jsonifyAll(posts);
+
   return Promise.all(
     postJSONs.map(async (postJSON) => {
       return {
         ...postJSON,
-        hasLiked: input.user
-          ? await hasUserLikedPost(input.user, postJSON._id)
+        hasLiked: options.user
+          ? await hasUserLikedPost(options.user, postJSON._id)
           : undefined,
       };
     })
   );
 }
 
-export interface ListPostInput extends ListOptions {
+export interface ListPostOptions extends ListOptions {
   user?: User;
 }
 
