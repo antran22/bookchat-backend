@@ -1,8 +1,8 @@
 import * as firebaseAdmin from "firebase-admin";
-import {User, UserModel} from "@/models/User";
-import {BadRequestException, getModuleLogger} from "@/utils";
-import {Types} from "mongoose";
-import {ListOptions} from "./_ServiceUtils";
+import { User, UserModel } from "@/models/User";
+import { BadRequestException, getModuleLogger } from "@/utils";
+import { Types } from "mongoose";
+import { ListOptions } from "@/models/_BaseModel";
 
 const userServiceLogger = getModuleLogger(__filename);
 

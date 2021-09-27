@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { Message, MessageJSON, MessageModel } from "@/models/Message";
 import { User, UserModel } from "@/models/User";
 import { multipleMulterFilesToStaticUrls, NotFoundException } from "@/utils";
-import { ListOptions } from "@/services/_ServiceUtils";
+import { ListOptions } from "@/models/_BaseModel";
 
 export async function createMessage(
   sender: User,

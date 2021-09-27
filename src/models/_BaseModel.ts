@@ -1,32 +1,35 @@
 import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
-import { Types } from "mongoose";
-import { TypegooseDocument } from "@/utils";
+import { Document, Types } from "mongoose";
 import { isDocument, Ref } from "@typegoose/typegoose";
+import { TypegooseModel } from "@/utils";
 
-type ToJSONFunction = <M extends DatabaseModel>(this: M) => M;
 interface Constructor<T> {
-  new (...args: any): T;
+  new (...args: any): any;
+}
+
+export interface ListOptions {
+  limit: number;
+  cursor?: string;
 }
 
 type UnwrapPromise<T> = T extends PromiseLike<infer U> ? U : T;
+
+export interface DatabaseModel extends Document {}
 
 export abstract class DatabaseModel extends TimeStamps {
   /** @ignore */
   _id!: Types.ObjectId;
   __v!: number;
 
-  /** @ignore */
-  toJSON!: ToJSONFunction;
-
   /**
-   * Sanitise the mongoose Document, remove secret fields for being returned by the API.
+   * This method is used when returning objects to the API output.
+   * You can call toJSON first in the implementation of this method to get a LeanDocument object,
+   * then return the appropriate fields.
+   * Or call populateFields to control which fields to populate, then jsonify those reference field manually
    */
   abstract jsonify(...args: any[]): Promise<any>;
 
-  async populateFields<T extends DatabaseModel>(
-    this: TypegooseDocument<T>,
-    populateFields?: (keyof T)[]
-  ): Promise<void> {
+  async populateFields(populateFields?: (keyof this)[]): Promise<void> {
     if (populateFields) {
       await this.populate(populateFields.join(" ")).execPopulate();
     }
@@ -51,5 +54,21 @@ export abstract class DatabaseModel extends TimeStamps {
       (value) => value.jsonify(args) as UnwrapPromise<ReturnType<T["jsonify"]>>
     );
     return Promise.all(promises);
+  }
+
+  static listByCursor<T extends DatabaseModel>(
+    this: TypegooseModel<T>,
+    options: ListOptions
+  ) {
+    let query = this.find().limit(options.limit);
+    if (options.cursor) {
+      query = query.where({
+        _id: {
+          $gt: new Types.ObjectId(options.cursor),
+        },
+      });
+    }
+
+    return query;
   }
 }

@@ -44,13 +44,13 @@ export class UsersController {
     @Query() cursor?: string
   ): Promise<Listing<UserJSON>> {
     const users = await listUserByCursor({ limit, cursor });
-    const sanitisedUsers = await User.jsonifyAll(users);
-    const lastUserID = getLastID(sanitisedUsers);
+    const userJSONs = await User.jsonifyAll(users);
+    const lastUserID = getLastID(userJSONs);
     const nextUrl = lastUserID
       ? env.resolveAPIPath("/users", { cursor: lastUserID, limit })
       : undefined;
     return {
-      data: sanitisedUsers,
+      data: userJSONs,
       nextUrl,
     };
   }

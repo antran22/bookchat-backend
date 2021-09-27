@@ -10,7 +10,7 @@ export class FriendRequest extends DatabaseModel {
   @requiredProp({ ref: () => User })
   recipient: Ref<User>;
 
-  async jsonify(this: TypegooseDocument<FriendRequest>): Promise<FriendRequestJSON> {
+  async jsonify(): Promise<FriendRequestJSON> {
     await this.populateFields(["sender", "recipient"]);
     return {
       sender: await User.jsonifyReferenceField(this.sender),

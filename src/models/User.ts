@@ -1,17 +1,17 @@
-import {requiredProp, TypegooseDocument} from "@/utils/typegoose";
+import { requiredProp, TypegooseDocument } from "@/utils/typegoose";
 import { getModelForClass, prop } from "@typegoose/typegoose";
 import _ from "lodash";
 import { Optional } from "@/utils";
 import { DatabaseModel } from "./_BaseModel";
 
 export class User extends DatabaseModel {
-  @requiredProp({unique: true})
+  @requiredProp({ unique: true })
   firebaseId!: string;
 
   @requiredProp()
   displayName!: string;
 
-  @prop({ default: "other" })
+  @prop({ default: "unspecified" })
   gender!: string;
 
   @prop()
@@ -32,7 +32,14 @@ export class User extends DatabaseModel {
   }
 
   async jsonify(): Promise<UserJSON> {
-    return _.omit(this.toJSON(), "firebaseId", "updatedAt", "__v");
+    return {
+      _id: this._id.toString(),
+      displayName: this.displayName,
+      gender: this.gender,
+      avatar: this.avatar,
+      bio: this.bio,
+      dateOfBirth: this.dateOfBirth,
+    };
   }
 }
 
@@ -40,6 +47,13 @@ export type UserProfileUpdateInput = Optional<
   Pick<User, "bio" | "gender" | "dateOfBirth" | "displayName" | "avatar">
 >;
 
-export type UserJSON = Omit<User, "firebaseId" | "updatedAt" | "__v">;
+export type UserJSON = {
+  _id: string;
+  displayName: string;
+  gender: string;
+  avatar?: string;
+  bio?: string;
+  dateOfBirth?: Date;
+};
 
 export const UserModel = getModelForClass(User);
