@@ -3,9 +3,21 @@ import { Book, BookJSON, BookModel } from "@/models/Book";
 import { NotFoundException } from "@/utils";
 import _ from "lodash";
 
-export async function listBook(options: ListOptions): Promise<BookJSON[]> {
-  const books = await BookModel.listByCursor(options).exec();
+export async function listBook(options: ListBookOption): Promise<BookJSON[]> {
+  let query = BookModel.listByCursor(options);
+  if (options.author) {
+    query = query.where("author").equals(options.author);
+  }
+  if (options.translator) {
+    query = query.where("translator").equals(options.translator);
+  }
+  const books = await query.exec();
   return Book.jsonifyAll(books);
+}
+
+export interface ListBookOption extends ListOptions {
+  author?: string;
+  translator?: string;
 }
 
 export async function createBook(input: MutateBookInput): Promise<BookJSON> {

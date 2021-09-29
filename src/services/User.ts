@@ -1,7 +1,6 @@
 import * as firebaseAdmin from "firebase-admin";
 import { User, UserModel } from "@/models/User";
 import { BadRequestException, getModuleLogger } from "@/utils";
-import { Types } from "mongoose";
 import { ListOptions } from "@/models/_BaseModel";
 
 const userServiceLogger = getModuleLogger(__filename);
@@ -9,18 +8,8 @@ const userServiceLogger = getModuleLogger(__filename);
 /**
  * List user using cursor method. Fetch `limit` users with `_id > cursor`.
  */
-export async function listUserByCursor(options: ListOptions): Promise<User[]> {
-  let query;
-  if (options.cursor) {
-    query = UserModel.find({
-      _id: {
-        $gt: new Types.ObjectId(options.cursor),
-      },
-    });
-  } else {
-    query = UserModel.find();
-  }
-  return await query.limit(options.limit).exec();
+export async function listUser(options: ListOptions): Promise<User[]> {
+  return UserModel.listByCursor(options).exec();
 }
 
 /**
