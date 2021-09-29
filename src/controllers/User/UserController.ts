@@ -27,7 +27,7 @@ import {
   multerFileToStaticUrl,
 } from "@/utils";
 import type { DeleteResult, Listing } from "../_ControllerUtils";
-import { listUserByCursor } from "@/services/User";
+import { listUser } from "@/services/User";
 
 @Tags("User")
 @Route("users")
@@ -43,7 +43,7 @@ export class UsersController {
     @Query() limit: number,
     @Query() cursor?: string
   ): Promise<Listing<UserJSON>> {
-    const users = await listUserByCursor({ limit, cursor });
+    const users = await listUser({ limit, cursor });
     const userJSONs = await User.jsonifyAll(users);
     const lastUserID = getLastID(userJSONs);
     const nextUrl = lastUserID

@@ -63,20 +63,10 @@ export interface UpdatePostCommentInput {
 }
 
 export async function listCommentFromPost(
-  input: ListPostCommentInput
+  input: ListPostCommentOptions
 ): Promise<PostCommentJSON[]> {
-  let query;
-  if (input.cursor) {
-    query = PostCommentModel.find({
-      _id: {
-        $gt: new Types.ObjectId(input.cursor),
-      },
-    });
-  } else {
-    query = PostCommentModel.find();
-  }
 
-  const comments = await query
+  const comments = await PostCommentModel.listByCursor(input)
     .where("post", input.post)
     .limit(input.limit)
     .exec();
@@ -84,7 +74,7 @@ export async function listCommentFromPost(
   return PostComment.jsonifyAll(comments, ["user"]);
 }
 
-export interface ListPostCommentInput extends ListOptions {
+export interface ListPostCommentOptions extends ListOptions {
   post: string;
 }
 

@@ -34,11 +34,15 @@ export class BookController {
   public async list(
     @Request() request: express.Request,
     @Query() limit: number,
-    @Query() cursor?: string
+    @Query() cursor?: string,
+    @Query() author?: string,
+    @Query() translator?: string
   ): Promise<Listing<BookJSON>> {
     const books = await listBook({
       limit,
       cursor,
+      author,
+      translator,
     });
 
     const lastBookId = getLastID(books);
@@ -47,6 +51,8 @@ export class BookController {
       ? env.resolveAPIPath(`/books`, {
           cursor: lastBookId,
           limit,
+          author,
+          translator,
         })
       : undefined;
 
