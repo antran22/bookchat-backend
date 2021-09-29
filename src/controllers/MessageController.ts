@@ -68,14 +68,12 @@ export class MessagesController {
     @Request() request: express.Request,
     @FormField() recipientID: string,
     @FormField() content: string,
-    @UploadedFiles() attachments: Express.Multer.File[]
+    @UploadedFiles() attachments?: Express.Multer.File[]
   ): Promise<MessageJSON> {
-    const message = await createMessage(
-      request.user,
-      recipientID,
+    const message = await createMessage(request.user, recipientID, {
       content,
-      attachments
-    );
+      attachments,
+    });
     // Todo: Notify SocketIO about this message
     return message;
   }

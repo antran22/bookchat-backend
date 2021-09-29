@@ -14,8 +14,7 @@ if (!fs.existsSync(localUploadDir)) {
   fileModuleLogger.info(
     `Upload directory ${localUploadDir} not found yet. Creating new.`
   );
-  fs.mkdirSync(localUploadDir);
-}
+  fs.mkdirSync(localUploadDir);}
 
 export async function multerFileToStaticUrl(
   multerFile?: Express.Multer.File
@@ -35,8 +34,11 @@ export async function multerFileToStaticUrl(
 }
 
 export async function multipleMulterFilesToStaticUrls(
-  multerFiles: Express.Multer.File[]
+  multerFiles?: Express.Multer.File[]
 ): Promise<string[]> {
+  if (!multerFiles) {
+    return [];
+  }
   const files = await Promise.all(multerFiles.map(multerFileToStaticUrl));
   return files as string[];
 }

@@ -149,7 +149,7 @@ export class PostsController {
   public async createPost(
     @Request() request: express.Request,
     @FormField() content: string,
-    @UploadedFiles() attachments: Express.Multer.File[]
+    @UploadedFiles() attachments?: Express.Multer.File[]
   ): Promise<PostJSON> {
     const post = await createPost({
       author: request.user,

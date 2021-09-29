@@ -7,20 +7,24 @@ import { ListOptions } from "@/models/_BaseModel";
 export async function createMessage(
   sender: User,
   recipientId: string,
-  content: string,
-  attachments: Express.Multer.File[]
+  input: CreateMessageInput
 ): Promise<MessageJSON> {
   if (!(await UserModel.exists({ _id: recipientId }))) {
     throw new NotFoundException("Recipient not found");
   }
-  const attachmentUrls = await multipleMulterFilesToStaticUrls(attachments);
+  const attachmentUrls = await multipleMulterFilesToStaticUrls(input.attachments);
   const message = await MessageModel.create({
     sender: sender._id,
     recipient: recipientId,
-    content,
+    content: input.content,
     attachments: attachmentUrls,
   });
   return message.jsonify();
+}
+
+export interface CreateMessageInput {
+  content: string;
+  attachments?: Express.Multer.File[];
 }
 
 export async function revokeMessage(messageId: string): Promise<MessageJSON> {

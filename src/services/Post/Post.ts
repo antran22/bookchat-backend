@@ -19,7 +19,7 @@ export async function createPost(input: CreatePostInput): Promise<PostJSON> {
 interface CreatePostInput {
   author: User;
   content: string;
-  attachments: Express.Multer.File[];
+  attachments?: Express.Multer.File[];
 }
 
 export async function listPostWithHaveLiked(
