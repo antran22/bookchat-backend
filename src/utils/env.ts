@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
-import { join as pathJoin, resolve as pathResolve } from "path";
+import {join as pathJoin, resolve as pathResolve} from "path";
 import _ from "lodash";
 import url from "url";
-import { parseBoolean } from "./helpers";
-import { getModuleLogger } from "./logging";
+import {parseBoolean} from "./helpers";
+import {getModuleLogger} from "./logging";
 
 const envPath = pathResolve(process.cwd(), process.env.ENV_FILE ?? ".env");
 const environment = dotenv.config({
@@ -87,7 +87,9 @@ env.resolveAPIPath = (path: string, queries?: Record<string, any>): string => {
   const uri = new url.URL(path, env("API_ROOT_URL"));
   if (queries) {
     _.forOwn(queries, (value, key) => {
-      uri.searchParams.set(key, `${value}`);
+      if (value && key) {
+        uri.searchParams.set(key, `${value}`);
+      }
     });
   }
   return uri.href;

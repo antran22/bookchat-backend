@@ -1,4 +1,5 @@
 import {
+  Delete,
   FormField,
   Get,
   Path,
@@ -12,15 +13,10 @@ import {
   UploadedFile,
 } from "@tsoa/runtime";
 import type express from "express";
-import {
-  env,
-  getLastID,
-  multerFileToStaticUrl,
-  NotFoundException,
-} from "@/utils";
-import type { Listing } from "../_ControllerUtils";
-import { createBook, listBook, updateBook } from "@/services/Book";
-import { BookJSON, BookModel } from "@/models/Book";
+import {env, getLastID, multerFileToStaticUrl, NotFoundException,} from "@/utils";
+import type {Listing} from "../_ControllerUtils";
+import {createBook, listBook, updateBook} from "@/services/Book";
+import {BookJSON, BookModel} from "@/models/Book";
 
 @Tags("Books")
 @Route("books")
@@ -48,7 +44,7 @@ export class BookController {
     const lastBookId = getLastID(books);
 
     const nextUrl = lastBookId
-      ? env.resolveAPIPath(`/books`, {
+      ? env.resolveAPIPath(request.path, {
           cursor: lastBookId,
           limit,
           author,
@@ -109,28 +105,28 @@ export class BookController {
     });
   }
 
-  // /**
-  //  * Delete
-  //  */
-  // @Security("jwt")
-  // @Delete("/{bookId}")
-  // public async deleteBook(
-  //   @Request() request: express.Request,
-  //   @Path() bookId: string
-  // ): Promise<BookJSON> {
-  //   const book = await BookModel.findByIdAndDelete(bookId);
-  //   if (!book) {
-  //     throw new NotFoundException(`Cannot find Book with id ${bookId}`);
-  //   }
-  //   return book.jsonify();
-  // }
+  /**
+   * Delete
+   */
+  @Security("jwt")
+  @Delete("/{bookId}")
+  public async deleteBook(
+    @Request() request: express.Request,
+    @Path() bookId: string
+  ): Promise<BookJSON> {
+    const book = await BookModel.findByIdAndDelete(bookId);
+    if (!book) {
+      throw new NotFoundException(`Cannot find Book with id ${bookId}`);
+    }
+    return book.jsonify();
+  }
 
   /**
    * Update book
    */
   @Security("jwt")
   @Put("/{bookId}")
-  public async deleteBook(
+  public async updateBook(
     @Request() request: express.Request,
     @Path() bookId: string,
 
