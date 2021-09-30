@@ -1,10 +1,9 @@
-import { requiredProp, TypegooseDocument } from "@/utils/typegoose";
-import { getModelForClass, index, Ref } from "@typegoose/typegoose";
-import { DatabaseModel } from "../_BaseModel";
-import { User, UserJSON } from "../User";
-import { Post, PostJSON } from "./Post";
+import {requiredProp, TypegooseDocument} from "@/utils/typegoose";
+import {getModelForClass, Ref} from "@typegoose/typegoose";
+import {DatabaseModel} from "../_BaseModel";
+import {User, UserJSON} from "../User";
+import {Post, PostJSON} from "./Post";
 
-@index({ user: 1, post: 1 }, { unique: true })
 export class PostComment extends DatabaseModel {
   @requiredProp({ ref: () => User })
   user!: Ref<User>;

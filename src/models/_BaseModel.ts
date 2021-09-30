@@ -1,7 +1,7 @@
-import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
-import { Document, Types } from "mongoose";
-import { isDocument, Ref } from "@typegoose/typegoose";
-import { TypegooseModel } from "@/utils";
+import {TimeStamps} from "@typegoose/typegoose/lib/defaultClasses";
+import {Document, Types} from "mongoose";
+import {isDocument, Ref} from "@typegoose/typegoose";
+import {TypegooseModel} from "@/utils";
 
 interface Constructor<T> {
   new (...args: any): any;
@@ -37,10 +37,11 @@ export abstract class DatabaseModel extends TimeStamps {
 
   static async jsonifyReferenceField<T extends DatabaseModel>(
     this: Constructor<T>,
-    ref: Ref<T>
+    ref: Ref<T>,
+    ...args: Parameters<T["jsonify"]>
   ): Promise<UnwrapPromise<ReturnType<T["jsonify"]>> | undefined> {
     if (isDocument(ref)) {
-      return ref.jsonify();
+      return ref.jsonify(args);
     }
     return undefined;
   }
