@@ -14,7 +14,7 @@ import {
 } from "@tsoa/runtime";
 import {PostJSON, PostLikeJSON, PostModel} from "@/models/Post";
 import type express from "express";
-import {env, ForbiddenException, getLastID, NotFoundException} from "@/utils";
+import {env, ForbiddenException, getLastID, ModelNotFoundException, NotFoundException,} from "@/utils";
 import type {DeleteResult, Listing} from "../_ControllerUtils";
 import {
   createPost,
@@ -38,13 +38,17 @@ export class PostsController {
   public async list(
     @Request() request: express.Request,
     @Query() limit: number,
-    @Query() cursor?: string
+    @Query() cursor?: string,
+    @Query() userId?: string
   ): Promise<Listing<ExtendedPostJSON>> {
-    const postJSONs = await listPostWithHaveLiked({
-      user: request.user,
-      limit,
-      cursor,
-    });
+    const postJSONs = await listPostWithHaveLiked(
+      {
+        limit,
+        cursor,
+        userId,
+      },
+      request.user
+    );
 
     const lastPostId = getLastID(postJSONs);
 
@@ -73,7 +77,7 @@ export class PostsController {
     @Query() cursor?: string
   ): Promise<Listing<PostLikeJSON>> {
     if (!(await PostModel.exists({ _id: postId }))) {
-      throw new NotFoundException(`Cannot find Post with ID ${postId}`);
+      throw new ModelNotFoundException(PostModel, postId);
     }
     const postLikeJSONs = await listLikeFromPost({
       post: postId,
@@ -135,7 +139,7 @@ export class PostsController {
     @Request() request: express.Request,
     @Path() postId: string
   ): Promise<ExtendedPostJSON> {
-    return getPostWithHasLiked({postId, user: request.user});
+    return getPostWithHasLiked({ postId, user: request.user });
   }
 
   /**
