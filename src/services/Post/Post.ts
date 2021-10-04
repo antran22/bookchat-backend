@@ -1,8 +1,9 @@
-import { Post, PostJSON, PostModel } from "@/models/Post";
-import { User } from "@/models/User";
-import { hasUserLikedPost } from "@/services/Post/PostLike";
-import { multipleMulterFilesToStaticUrls, NotFoundException } from "@/utils";
-import { ListOptions } from "@/models/_BaseModel";
+import {Post, PostJSON, PostModel} from "@/models/Post";
+import {User} from "@/models/User";
+import {countLikeInPost, hasUserLikedPost} from "@/services/Post/PostLike";
+import {multipleMulterFilesToStaticUrls, NotFoundException} from "@/utils";
+import {ListOptions} from "@/models/_BaseModel";
+import {countCommentInPost} from "@/services/Post/PostComment";
 
 export async function createPost(input: CreatePostInput): Promise<PostJSON> {
   const attachmentUrls = await multipleMulterFilesToStaticUrls(
@@ -24,7 +25,7 @@ interface CreatePostInput {
 
 export async function listPostWithHaveLiked(
   options: ListPostOptions
-): Promise<PostJSONWithHasLiked[]> {
+): Promise<ExtendedPostJSON[]> {
   const posts = await PostModel.listByCursor(options).exec();
 
   const postJSONs = await Post.jsonifyAll(posts);
@@ -47,7 +48,7 @@ export interface ListPostOptions extends ListOptions {
 
 export async function getPostWithHasLiked(
   input: GetPostInput
-): Promise<PostJSONWithHasLiked> {
+): Promise<ExtendedPostJSON> {
   const post = await PostModel.findById(input.postId).exec();
   if (!post) {
     throw new NotFoundException(`Cannot find Post with ID ${input.postId}`);
@@ -55,6 +56,8 @@ export async function getPostWithHasLiked(
   const postJSON = await post.jsonify();
   return {
     ...postJSON,
+    commentCount: countCommentInPost(input.postId),
+    likeCount: countLikeInPost(input.postId),
     hasLiked: input.user
       ? await hasUserLikedPost(input.user, postJSON._id)
       : undefined,
@@ -66,6 +69,8 @@ export interface GetPostInput {
   postId: string;
 }
 
-export interface PostJSONWithHasLiked extends PostJSON {
+export interface ExtendedPostJSON extends PostJSON {
   hasLiked?: boolean;
+  commentCount: number;
+  likeCount: number;
 }
