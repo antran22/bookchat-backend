@@ -1,8 +1,8 @@
-import { PostLike, PostLikeJSON, PostLikeModel } from "@/models/Post";
-import { ListOptions } from "@/models/_BaseModel";
-import { User } from "@/models/User";
-import { DeleteResult } from "@/controllers/_ControllerUtils";
-import { BadRequestException } from "@/utils";
+import {PostLike, PostLikeJSON, PostLikeModel} from "@/models/Post";
+import {ListOptions} from "@/models/_BaseModel";
+import {User} from "@/models/User";
+import {DeleteResult} from "@/controllers/_ControllerUtils";
+import {BadRequestException} from "@/utils";
 
 export async function makeUserLikePost(
   input: CreatePostLikeInput
@@ -58,7 +58,7 @@ export interface ListPostLikeOptions extends ListOptions {
   post: string;
 }
 
-export async function countLikeFromPost(postId: string): Promise<number> {
+export async function countLikeInPost(postId: string): Promise<number> {
   return PostLikeModel.count().where("post", postId).exec();
 }
 

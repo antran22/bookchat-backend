@@ -12,17 +12,18 @@ import {
   Tags,
   UploadedFiles,
 } from "@tsoa/runtime";
-import { PostJSON, PostLikeJSON, PostModel } from "@/models/Post";
+import {PostJSON, PostLikeJSON, PostModel} from "@/models/Post";
 import type express from "express";
-import { env, ForbiddenException, getLastID, NotFoundException } from "@/utils";
-import type { DeleteResult, Listing } from "../_ControllerUtils";
+import {env, ForbiddenException, getLastID, NotFoundException} from "@/utils";
+import type {DeleteResult, Listing} from "../_ControllerUtils";
 import {
   createPost,
+  ExtendedPostJSON,
+  getPostWithHasLiked,
   listLikeFromPost,
   listPostWithHaveLiked,
   makeUserLikePost,
   makeUserUnlikePost,
-  PostJSONWithHasLiked,
 } from "@/services/Post";
 
 @Tags("Post")
@@ -38,7 +39,7 @@ export class PostsController {
     @Request() request: express.Request,
     @Query() limit: number,
     @Query() cursor?: string
-  ): Promise<Listing<PostJSONWithHasLiked>> {
+  ): Promise<Listing<ExtendedPostJSON>> {
     const postJSONs = await listPostWithHaveLiked({
       user: request.user,
       limit,
@@ -133,12 +134,8 @@ export class PostsController {
   public async getPost(
     @Request() request: express.Request,
     @Path() postId: string
-  ): Promise<PostJSON> {
-    const post = await PostModel.findById(postId).exec();
-    if (!post) {
-      throw new NotFoundException(`There is no Post with ID ${postId}`);
-    }
-    return post.jsonify();
+  ): Promise<ExtendedPostJSON> {
+    return getPostWithHasLiked({postId, user: request.user});
   }
 
   /**
@@ -179,5 +176,3 @@ export class PostsController {
     return post.jsonify();
   }
 }
-
-
