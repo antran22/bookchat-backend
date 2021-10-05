@@ -1,3 +1,6 @@
+import {DatabaseModel} from "@/models/_BaseModel";
+import {TypegooseModel} from "@/utils/typegoose";
+
 export abstract class HTTPException extends Error {
   statusCode!: number;
   name!: string;
@@ -20,4 +23,12 @@ export class ForbiddenException extends HTTPException {
 export class NotFoundException extends HTTPException {
   statusCode = 404;
   name = "Not Found";
+}
+
+export class ModelNotFoundException<
+  T extends DatabaseModel
+> extends NotFoundException {
+  constructor(model: TypegooseModel<T>, id: any) {
+    super(`Cannot find object of type ${model.name} with ID: ${id}`);
+  }
 }

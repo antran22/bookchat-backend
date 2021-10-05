@@ -1,8 +1,8 @@
-import { env } from "./env";
-import { getModuleLogger } from "./logging";
+import {env} from "./env";
+import {getModuleLogger} from "./logging";
 import fs from "fs";
 import path from "path";
-import { v4 as uuidV4 } from "uuid";
+import {v4 as uuidV4} from "uuid";
 
 const fileModuleLogger = getModuleLogger(__filename);
 
@@ -14,7 +14,8 @@ if (!fs.existsSync(localUploadDir)) {
   fileModuleLogger.info(
     `Upload directory ${localUploadDir} not found yet. Creating new.`
   );
-  fs.mkdirSync(localUploadDir);}
+  fs.mkdirSync(localUploadDir);
+}
 
 export async function multerFileToStaticUrl(
   multerFile?: Express.Multer.File
@@ -30,7 +31,7 @@ export async function multerFileToStaticUrl(
   } else {
     fileWriteStream.write(multerFile.buffer);
   }
-  return env.resolveAPIPath(`_uploads/${fileName}`);
+  return `/_uploads/${fileName}`;
 }
 
 export async function multipleMulterFilesToStaticUrls(

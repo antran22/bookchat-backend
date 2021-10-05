@@ -1,7 +1,7 @@
 import {Post, PostJSON, PostModel} from "@/models/Post";
 import {User} from "@/models/User";
 import {countLikeInPost, hasUserLikedPost} from "@/services/Post/PostLike";
-import {multipleMulterFilesToStaticUrls, NotFoundException} from "@/utils";
+import {ModelNotFoundException, multipleMulterFilesToStaticUrls,} from "@/utils";
 import {ListOptions} from "@/models/_BaseModel";
 import {countCommentInPost} from "@/services/Post/PostComment";
 
@@ -24,18 +24,25 @@ interface CreatePostInput {
 }
 
 export async function listPostWithHaveLiked(
-  options: ListPostOptions
+  options: ListPostOptions,
+  currentUser: User
 ): Promise<ExtendedPostJSON[]> {
-  const posts = await PostModel.listByCursor(options).exec();
+  let query = PostModel.listByCursor(options);
+  if (options.userId) {
+    query = query.where("author", options.userId);
+  }
 
+  const posts = await query.exec();
   const postJSONs = await Post.jsonifyAll(posts);
 
   return Promise.all(
     postJSONs.map(async (postJSON) => {
       return {
         ...postJSON,
-        hasLiked: options.user
-          ? await hasUserLikedPost(options.user, postJSON._id)
+        commentCount: await countCommentInPost(postJSON._id),
+        likeCount: await countLikeInPost(postJSON._id),
+        hasLiked: currentUser
+          ? await hasUserLikedPost(currentUser, postJSON._id)
           : undefined,
       };
     })
@@ -43,7 +50,7 @@ export async function listPostWithHaveLiked(
 }
 
 export interface ListPostOptions extends ListOptions {
-  user?: User;
+  userId?: string;
 }
 
 export async function getPostWithHasLiked(
@@ -51,13 +58,13 @@ export async function getPostWithHasLiked(
 ): Promise<ExtendedPostJSON> {
   const post = await PostModel.findById(input.postId).exec();
   if (!post) {
-    throw new NotFoundException(`Cannot find Post with ID ${input.postId}`);
+    throw new ModelNotFoundException(PostModel, input.postId);
   }
   const postJSON = await post.jsonify();
   return {
     ...postJSON,
-    commentCount: countCommentInPost(input.postId),
-    likeCount: countLikeInPost(input.postId),
+    commentCount: await countCommentInPost(input.postId),
+    likeCount: await countLikeInPost(input.postId),
     hasLiked: input.user
       ? await hasUserLikedPost(input.user, postJSON._id)
       : undefined,

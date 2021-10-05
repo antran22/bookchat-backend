@@ -1,7 +1,6 @@
-import { ListOptions } from "@/models/_BaseModel";
-import { Book, BookJSON, BookModel } from "@/models/Book";
-import { NotFoundException } from "@/utils";
-import _ from "lodash";
+import {ListOptions} from "@/models/_BaseModel";
+import {Book, BookJSON, BookModel} from "@/models/Book";
+import {ModelNotFoundException} from "@/utils";
 
 export async function listBook(options: ListBookOption): Promise<BookJSON[]> {
   let query = BookModel.listByCursor(options);
@@ -29,16 +28,10 @@ export async function updateBook(
   bookId: string,
   input: Partial<MutateBookInput>
 ): Promise<BookJSON> {
-  const book = await BookModel.findById(bookId).exec();
+  const book = await BookModel.findByIdAndUpdate(bookId, input).exec();
   if (!book) {
-    throw new NotFoundException(`Cannot find Book with id: ${bookId}`);
+    throw new ModelNotFoundException(BookModel, bookId);
   }
-  _.forOwn(input, (value, field) => {
-    if (field && value) {
-      book.set(field, value);
-    }
-  });
-  await book.save();
   return book.jsonify();
 }
 
