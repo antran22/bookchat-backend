@@ -54,6 +54,7 @@ export class PostsController {
 
     const nextUrl = lastPostId
       ? env.resolveAPIPath(`/posts`, {
+          userId,
           cursor: lastPostId,
           limit,
         })
@@ -152,13 +153,12 @@ export class PostsController {
     @FormField() content: string,
     @UploadedFiles() attachments?: Express.Multer.File[]
   ): Promise<PostJSON> {
-    const post = await createPost({
+    // Todo: Notify SocketIO about this post
+    return createPost({
       author: request.user,
       content,
       attachments,
     });
-    // Todo: Notify SocketIO about this post
-    return post;
   }
 
   /**
