@@ -1,10 +1,9 @@
 import type express from "express";
-import { decodeAccessToken } from "@/services/Authentication";
-import { BadRequestException, UnauthorizedException } from "@/utils/exceptions";
-import { User, UserModel } from "@/models/User";
+import {decodeAccessToken} from "./JWT";
+import {BadRequestException, UnauthorizedException} from "@/utils/exceptions";
+import {User, UserModel} from "@/models/User";
 import _ from "lodash";
-import { env } from "@/utils";
-import { expressLogger } from "@/utils";
+import {env, expressLogger} from "@/utils";
 
 export async function expressAuthentication(
   request: express.Request,

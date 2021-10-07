@@ -3,24 +3,26 @@ import {ListOptions} from "@/models/_BaseModel";
 import {User} from "@/models/User";
 import {DeleteResult} from "@/controllers/_ControllerUtils";
 import {BadRequestException} from "@/utils";
+import {Error as MongooseError} from "mongoose";
+import {notifyNewPostLike} from "@/services/Notification/NotificationService";
 
 export async function makeUserLikePost(
-  input: CreatePostLikeInput
+  userId: string,
+  postId: string
 ): Promise<PostLikeJSON> {
   try {
     const postLike = await PostLikeModel.create({
-      post: input.postId,
-      user: input.user._id,
+      post: postId,
+      user: userId,
     });
+    await notifyNewPostLike(postLike);
     return postLike.jsonify();
   } catch (e) {
-    throw new BadRequestException("User have liked post already");
+    if (e instanceof MongooseError) {
+      throw new BadRequestException("User have liked post already");
+    }
+    throw e;
   }
-}
-
-export interface CreatePostLikeInput {
-  postId: string;
-  user: User;
 }
 
 export async function makeUserUnlikePost(

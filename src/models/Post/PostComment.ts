@@ -1,4 +1,4 @@
-import {requiredProp, TypegooseDocument} from "@/utils/typegoose";
+import {requiredProp} from "@/utils/typegoose";
 import {getModelForClass, Ref} from "@typegoose/typegoose";
 import {DatabaseModel} from "../_BaseModel";
 import {User, UserJSON} from "../User";
@@ -14,10 +14,7 @@ export class PostComment extends DatabaseModel {
   @requiredProp()
   content!: string;
 
-  async jsonify(
-    this: TypegooseDocument<PostComment>,
-    fields?: (keyof PostComment)[]
-  ): Promise<PostCommentJSON> {
+  async jsonify(fields?: (keyof PostComment)[]): Promise<PostCommentJSON> {
     await this.populateFields(fields);
 
     const userJSON = await User.jsonifyReferenceField(this.user);
