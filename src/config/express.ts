@@ -44,7 +44,7 @@ const swaggerLogHandler: express.Handler = async (req, res) => {
 app.use("/_docs", swaggerUi.serve, swaggerLogHandler);
 
 app.get("/_ws", async (req, res) => {
-  const file = fs.readFileSync(env.projectPath("docs/websocket.html"));
+  const file = fs.readFileSync(env.projectPath("public/websocket.html"));
   const htmlString = file.toString();
   const user = await UserModel.findOne().exec();
   const accessToken = signAccessToken(user!);

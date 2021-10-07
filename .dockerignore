@@ -4,6 +4,8 @@
 src/documentations
 src/generated
 
+!public
+
 !package*.json
 !tsconfig.json
 !tsoa.json
