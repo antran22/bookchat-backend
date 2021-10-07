@@ -5,16 +5,15 @@ import {ModelNotFoundException, multipleMulterFilesToStaticUrls,} from "@/utils"
 import {ListOptions} from "@/models/_BaseModel";
 import {countCommentInPost} from "@/services/Post/PostComment";
 
-export async function createPost(input: CreatePostInput): Promise<PostJSON> {
+export async function createPost(input: CreatePostInput): Promise<Post> {
   const attachmentUrls = await multipleMulterFilesToStaticUrls(
     input.attachments
   );
-  const post = await PostModel.create({
+  return PostModel.create({
     author: input.author._id,
     content: input.content,
     attachments: attachmentUrls,
   });
-  return post.jsonify();
 }
 
 interface CreatePostInput {

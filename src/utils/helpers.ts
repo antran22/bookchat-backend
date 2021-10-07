@@ -70,3 +70,7 @@ export type ClassInterface<C> = {
 export type Optional<T> = {
   [P in keyof T]?: T[P];
 };
+
+export function enumKeyList(a: object): string[] {
+  return Object.keys(a).filter((k) => isNaN(Number(k)));
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<head>
+  <script
+    src="https://cdn.socket.io/4.2.0/socket.io.min.js"
+    integrity="sha384-PiBR5S00EtOj2Lto9Uu81cmoyZqR57XcOna1oAuVuIEjzj0wpqDVfD0JA9eXlRsj"
+    crossorigin="anonymous"
+  ></script>
+  <title>Test websocket</title>
+</head>
+<body>
+  <script>
+    window.onload = () => {
+      const events = [$EVENT_LIST];
+
+      document.getElementById("event_list").innerText = events.join("\n");
+      const socket = io({
+        extraHeaders: {
+          Authorization: "Bearer $ACCESS_TOKEN",
+        },
+      });
+
+      socket.on("connect", () => {
+        document.getElementById("status").innerText = "Connected";
+      });
+
+      for (let event of events) {
+        socket.on(event, (payload) => {
+          const body = document.getElementById("body");
+          body.innerHTML += `<p>${event}: ${JSON.stringify(payload)}</p>`;
+        });
+      }
+    };
+  </script>
+  <div>
+    <h1>Events list</h1>
+    <div id="event_list"></div>
+    <h1>Output</h1>
+    <h2 id="status" style="color: red">Connecting...</h2>
+    <div id="body"></div>
+  </div>
+</body>

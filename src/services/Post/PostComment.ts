@@ -1,9 +1,10 @@
-import { Types } from "mongoose";
-import { ListOptions } from "@/models/_BaseModel";
-import { User } from "@/models/User";
-import { DeleteResult } from "@/controllers/_ControllerUtils";
-import { ForbiddenException, NotFoundException } from "@/utils";
-import { PostComment, PostCommentJSON, PostCommentModel } from "@/models/Post";
+import {Types} from "mongoose";
+import {ListOptions} from "@/models/_BaseModel";
+import {User} from "@/models/User";
+import {DeleteResult} from "@/controllers/_ControllerUtils";
+import {ForbiddenException, NotFoundException} from "@/utils";
+import {PostComment, PostCommentJSON, PostCommentModel} from "@/models/Post";
+import {notifyNewPostComment} from "@/services/Notification/NotificationService";
 
 export async function createPostComment(
   postId: string,
@@ -15,6 +16,7 @@ export async function createPostComment(
     post: postId,
     user: user._id,
   });
+  await notifyNewPostComment(comment);
   return comment.jsonify();
 }
 
@@ -65,7 +67,6 @@ export interface UpdatePostCommentInput {
 export async function listCommentFromPost(
   input: ListPostCommentOptions
 ): Promise<PostCommentJSON[]> {
-
   const comments = await PostCommentModel.listByCursor(input)
     .where("post", input.post)
     .limit(input.limit)

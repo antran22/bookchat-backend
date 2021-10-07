@@ -1,25 +1,9 @@
-import {
-  FormField,
-  Path,
-  Security,
-  Post,
-  Get,
-  Delete,
-  Query,
-  Request,
-  Route,
-  Tags,
-  UploadedFiles,
-} from "@tsoa/runtime";
+import {Delete, FormField, Get, Path, Post, Query, Request, Route, Security, Tags, UploadedFiles,} from "@tsoa/runtime";
 import type express from "express";
-import { env, getLastID } from "@/utils";
-import type { Listing } from "./_ControllerUtils";
-import {
-  createMessage,
-  listMessageInConversation,
-  revokeMessage,
-} from "@/services/Message";
-import { MessageJSON } from "@/models/Message";
+import {env, getLastID} from "@/utils";
+import type {Listing} from "./_ControllerUtils";
+import {createMessage, listMessageInConversation, revokeMessage,} from "@/services/Message";
+import {MessageJSON} from "@/models/Message";
 
 @Tags("Message")
 @Route("messages")
@@ -70,12 +54,10 @@ export class MessagesController {
     @FormField() content: string,
     @UploadedFiles() attachments?: Express.Multer.File[]
   ): Promise<MessageJSON> {
-    const message = await createMessage(request.user, recipientID, {
+    return await createMessage(request.user, recipientID, {
       content,
       attachments,
     });
-    // Todo: Notify SocketIO about this message
-    return message;
   }
 
   /**

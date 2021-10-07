@@ -25,6 +25,7 @@ import {
   makeUserLikePost,
   makeUserUnlikePost,
 } from "@/services/Post";
+import {notifyNewPost} from "@/services/Notification/NotificationService";
 
 @Tags("Post")
 @Route("posts")
@@ -112,7 +113,7 @@ export class PostsController {
     if (!(await PostModel.exists({ _id: postId }))) {
       throw new NotFoundException(`Cannot find Post with ID ${postId}`);
     }
-    return makeUserLikePost({ user: request.user, postId });
+    return makeUserLikePost(request.user._id.toString(), postId);
   }
 
   /**
@@ -153,12 +154,13 @@ export class PostsController {
     @FormField() content: string,
     @UploadedFiles() attachments?: Express.Multer.File[]
   ): Promise<PostJSON> {
-    // Todo: Notify SocketIO about this post
-    return createPost({
+    const post = await createPost({
       author: request.user,
       content,
       attachments,
     });
+    await notifyNewPost(post);
+    return post.jsonify();
   }
 
   /**

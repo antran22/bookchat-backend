@@ -1,8 +1,8 @@
-import { requiredProp, TypegooseDocument } from "@/utils/typegoose";
-import { getModelForClass, index, Ref } from "@typegoose/typegoose";
-import { DatabaseModel } from "../_BaseModel";
-import { User, UserJSON } from "../User";
-import { Post, PostJSON } from "./Post";
+import {requiredProp} from "@/utils/typegoose";
+import {getModelForClass, index, Ref} from "@typegoose/typegoose";
+import {DatabaseModel} from "../_BaseModel";
+import {User, UserJSON} from "../User";
+import {Post, PostJSON} from "./Post";
 
 @index({ user: 1, post: 1 }, { unique: true }) // compound index
 export class PostLike extends DatabaseModel {
@@ -12,16 +12,10 @@ export class PostLike extends DatabaseModel {
   @requiredProp({ ref: () => Post })
   post!: Ref<Post>;
 
-  async jsonify(
-    this: TypegooseDocument<PostLike>,
-    populateFields?: (keyof PostLike)[]
-  ): Promise<PostLikeJSON> {
-    if (populateFields) {
-      await this.populate(populateFields.join(" ")).execPopulate();
-    }
+  async jsonify(populateFields?: (keyof PostLike)[]): Promise<PostLikeJSON> {
+    await this.populateFields(populateFields);
 
     const userJSON = await User.jsonifyReferenceField(this.user);
-
     const postJSON = await Post.jsonifyReferenceField(this.post);
 
     return {

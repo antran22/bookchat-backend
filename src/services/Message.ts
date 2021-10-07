@@ -1,8 +1,25 @@
-import { Types } from "mongoose";
-import { Message, MessageJSON, MessageModel } from "@/models/Message";
-import { User, UserModel } from "@/models/User";
-import { multipleMulterFilesToStaticUrls, NotFoundException } from "@/utils";
-import { ListOptions } from "@/models/_BaseModel";
+import {Types} from "mongoose";
+import {Message, MessageJSON, MessageModel} from "@/models/Message";
+import {User, UserModel} from "@/models/User";
+import {multipleMulterFilesToStaticUrls, NotFoundException} from "@/utils";
+import {ListOptions} from "@/models/_BaseModel";
+import {notifyUnreadMessage, signalNewMessage, signalRevokedMessage,} from "@/services/Notification";
+
+async function lastMessageTime(
+  senderId: string,
+  recipientId: string
+): Promise<Date> {
+  const message = await MessageModel.findOne()
+    .where("sender", senderId)
+    .where("recipient", recipientId)
+    .sort({ createdAt: -1 })
+    .exec();
+  if (!message) {
+    return new Date(0);
+  }
+
+  return message.createdAt!;
+}
 
 export async function createMessage(
   sender: User,
@@ -12,13 +29,25 @@ export async function createMessage(
   if (!(await UserModel.exists({ _id: recipientId }))) {
     throw new NotFoundException("Recipient not found");
   }
-  const attachmentUrls = await multipleMulterFilesToStaticUrls(input.attachments);
+  const attachmentUrls = await multipleMulterFilesToStaticUrls(
+    input.attachments
+  );
+
   const message = await MessageModel.create({
     sender: sender._id,
     recipient: recipientId,
     content: input.content,
     attachments: attachmentUrls,
   });
+  const lastTime = await lastMessageTime(sender._id.toString(), recipientId);
+
+  // 1 days
+  if (Date.now() - lastTime.getTime() > 1000 * 60 * 60 * 24) {
+    await notifyUnreadMessage(message);
+  }
+
+  await signalNewMessage(message);
+
   return message.jsonify();
 }
 
@@ -34,6 +63,9 @@ export async function revokeMessage(messageId: string): Promise<MessageJSON> {
   }
   message.revoked = true;
   await message.save();
+
+  await signalRevokedMessage(message);
+
   return message.jsonify();
 }
 
