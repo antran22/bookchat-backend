@@ -1,20 +1,8 @@
-import {
-  Body,
-  Delete,
-  Get,
-  Path,
-  Post,
-  Put,
-  Query,
-  Request,
-  Route,
-  Security,
-  Tags,
-} from "@tsoa/runtime";
-import { PostCommentJSON, PostLikeJSON, PostModel } from "@/models/Post";
+import {Body, Delete, Get, Path, Post, Put, Query, Request, Route, Security, Tags,} from "@tsoa/runtime";
+import {PostCommentJSON, PostLikeJSON, PostModel} from "@/models/Post";
 import type express from "express";
-import { env, getLastID, NotFoundException } from "@/utils";
-import type { DeleteResult, Listing } from "../_ControllerUtils";
+import {env, getLastID, NotFoundException} from "@/utils";
+import type {DeleteResult, Listing} from "../_ControllerUtils";
 import {
   createPostComment,
   CreatePostCommentInput,
@@ -24,7 +12,7 @@ import {
   UpdatePostCommentInput,
 } from "@/services/Post/PostComment";
 
-@Tags("Post")
+@Tags("Post Comments")
 @Route("posts")
 export class PostCommentsController {
   /**

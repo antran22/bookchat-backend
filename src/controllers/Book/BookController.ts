@@ -14,7 +14,7 @@ import {
 } from "@tsoa/runtime";
 import type express from "express";
 import {env, getLastID, multerFileToStaticUrl, NotFoundException,} from "@/utils";
-import type {Listing} from "../_ControllerUtils";
+import type {DeleteResult, Listing} from "../_ControllerUtils";
 import {createBook, listBook, updateBook} from "@/services/Book";
 import {BookJSON, BookModel} from "@/models/Book";
 
@@ -113,12 +113,14 @@ export class BookController {
   public async deleteBook(
     @Request() request: express.Request,
     @Path() bookId: string
-  ): Promise<BookJSON> {
+  ): Promise<DeleteResult<BookJSON>> {
     const book = await BookModel.findByIdAndDelete(bookId);
     if (!book) {
       throw new NotFoundException(`Cannot find Book with id ${bookId}`);
     }
-    return book.jsonify();
+    return {
+      deleted: await book.jsonify(),
+    };
   }
 
   /**

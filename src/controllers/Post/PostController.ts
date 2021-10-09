@@ -1,30 +1,9 @@
-import {
-  Delete,
-  FormField,
-  Get,
-  Path,
-  Post,
-  Put,
-  Query,
-  Request,
-  Route,
-  Security,
-  Tags,
-  UploadedFiles,
-} from "@tsoa/runtime";
-import {PostJSON, PostLikeJSON, PostModel} from "@/models/Post";
+import {Delete, FormField, Get, Path, Post, Query, Request, Route, Security, Tags, UploadedFiles,} from "@tsoa/runtime";
+import {PostJSON, PostModel} from "@/models/Post";
 import type express from "express";
-import {env, ForbiddenException, getLastID, ModelNotFoundException, NotFoundException,} from "@/utils";
+import {env, ForbiddenException, getLastID, NotFoundException} from "@/utils";
 import type {DeleteResult, Listing} from "../_ControllerUtils";
-import {
-  createPost,
-  ExtendedPostJSON,
-  getPostWithHasLiked,
-  listLikeFromPost,
-  listPostWithHaveLiked,
-  makeUserLikePost,
-  makeUserUnlikePost,
-} from "@/services/Post";
+import {createPost, ExtendedPostJSON, getPostWithHasLiked, listPostWithHaveLiked,} from "@/services/Post";
 import {notifyNewPost} from "@/services/Notification/NotificationService";
 
 @Tags("Post")
@@ -67,73 +46,6 @@ export class PostsController {
   }
 
   /**
-   * All the likes of a post
-   * @isInt limit
-   * @maximum limit 100 Fetch at most 100 likes at once
-   */
-  @Get("/{postId}/likes")
-  public async listLike(
-    @Request() request: express.Request,
-    @Path() postId: string,
-    @Query() limit: number,
-    @Query() cursor?: string
-  ): Promise<Listing<PostLikeJSON>> {
-    if (!(await PostModel.exists({ _id: postId }))) {
-      throw new ModelNotFoundException(PostModel, postId);
-    }
-    const postLikeJSONs = await listLikeFromPost({
-      post: postId,
-      limit,
-      cursor,
-    });
-
-    const lastPostId = getLastID(postLikeJSONs);
-
-    const nextUrl = lastPostId
-      ? env.resolveAPIPath(`/posts/{postId}/likes`, {
-          cursor: lastPostId,
-          limit,
-        })
-      : undefined;
-    return {
-      data: postLikeJSONs,
-      nextUrl,
-    };
-  }
-
-  /**
-   * Like a post
-   */
-  @Security("jwt")
-  @Put("/{postId}/likes")
-  public async likePost(
-    @Request() request: express.Request,
-    @Path() postId: string
-  ): Promise<PostLikeJSON> {
-    if (!(await PostModel.exists({ _id: postId }))) {
-      throw new NotFoundException(`Cannot find Post with ID ${postId}`);
-    }
-    return makeUserLikePost(request.user._id.toString(), postId);
-  }
-
-  /**
-   * Dislike a post
-   * @isInt limit
-   * @maximum limit 100 Fetch at most 100 likes at once
-   */
-  @Security("jwt")
-  @Delete("/{postId}/likes")
-  public async unlikePost(
-    @Request() request: express.Request,
-    @Path() postId: string
-  ): Promise<DeleteResult<PostLikeJSON>> {
-    if (!(await PostModel.exists({ _id: postId }))) {
-      throw new NotFoundException(`Cannot find Post with ID ${postId}`);
-    }
-    return makeUserUnlikePost({ user: request.user, postId });
-  }
-
-  /**
    * Get a post
    */
   @Get("/{postId}")
@@ -171,7 +83,7 @@ export class PostsController {
   public async deletePost(
     @Request() request: express.Request,
     @Path() postId: string
-  ): Promise<PostJSON> {
+  ): Promise<DeleteResult<PostJSON>> {
     const post = await PostModel.findById(postId).exec();
     if (!post) {
       throw new NotFoundException(`There is no Post with ID ${postId}`);
@@ -179,6 +91,8 @@ export class PostsController {
     if (post.author !== request.user._id) {
       throw new ForbiddenException("You cannot delete this Post");
     }
-    return post.jsonify();
+    return {
+      deleted: await post.jsonify(),
+    };
   }
 }
