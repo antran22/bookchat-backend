@@ -2,7 +2,7 @@ import {ListOptions} from "@/models/_BaseModel";
 import {BookReview, BookReviewJSON, BookReviewModel,} from "@/models/Book/BookReview";
 import {User} from "@/models/User";
 import {BadRequestException, NotFoundException, Optional} from "@/utils";
-import {Error as MongooseError} from "mongoose";
+import {Error as MongooseError, Types} from "mongoose";
 
 export async function getReviewsForBook(
   bookId: string,
@@ -111,4 +111,24 @@ export async function deleteBookReview(
   }
 
   return review.jsonify(["book"]);
+}
+
+export async function calculateAverageReview(bookId: string) {
+  const result: { averageReview: number }[] = await BookReviewModel.aggregate([
+    {
+      $match: {
+        book: new Types.ObjectId(bookId),
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        averageReview: {
+          $avg: "$rating",
+        },
+      },
+    },
+  ]);
+
+  return result[0].averageReview;
 }

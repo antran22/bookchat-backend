@@ -4,6 +4,7 @@ import type {DeleteResult, Listing} from "../_ControllerUtils";
 import {BookReviewJSON} from "@/models/Book/BookReview";
 import {env, getLastID} from "@/utils";
 import {
+  calculateAverageReview,
   createBookReview,
   CreateBookReviewInput,
   deleteBookReview,
@@ -46,6 +47,18 @@ export class BookReviewController {
       data: review,
       nextUrl,
     };
+  }
+
+  /**
+   * Create a review from an user for a book
+   */
+  @Security("jwt")
+  @Get("/{bookId}/rating")
+  public async getAverageRating(
+    @Request() request: express.Request,
+    @Path() bookId: string
+  ): Promise<number> {
+    return calculateAverageReview(bookId);
   }
 
   /**
