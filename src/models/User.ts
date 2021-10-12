@@ -1,8 +1,8 @@
-import { requiredProp, TypegooseDocument } from "@/utils/typegoose";
-import { getModelForClass, prop } from "@typegoose/typegoose";
+import {requiredProp, TypegooseDocument} from "@/utils/typegoose";
+import {getModelForClass, prop} from "@typegoose/typegoose";
 import _ from "lodash";
-import { Optional } from "@/utils";
-import { DatabaseModel } from "./_BaseModel";
+import {Optional} from "@/utils";
+import {DatabaseModel} from "./_BaseModel";
 
 export class User extends DatabaseModel {
   @requiredProp({ unique: true })

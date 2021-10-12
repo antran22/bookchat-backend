@@ -1,7 +1,7 @@
-import { mongoose } from "@typegoose/typegoose";
-import { env, getModuleLogger, NodeEnv } from "@/utils";
-import { UserModel } from "@/models/User";
-import { signAccessToken } from "@/services/Authentication";
+import {mongoose} from "@typegoose/typegoose";
+import {env, getModuleLogger, NodeEnv} from "@/utils";
+import {UserModel} from "@/models/User";
+import {signAccessToken} from "@/services/Authentication";
 
 const logger = getModuleLogger(__filename);
 

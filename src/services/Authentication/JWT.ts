@@ -1,5 +1,5 @@
-import { env, getModuleLogger } from "@/utils";
-import type { User } from "@/models/User";
+import {env, getModuleLogger} from "@/utils";
+import type {User} from "@/models/User";
 import jwt from "jsonwebtoken";
 
 const jwtServiceLogger = getModuleLogger(__filename);

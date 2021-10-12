@@ -1,9 +1,6 @@
-import { expressLogger } from "@/utils";
-import { initialiseFirebaseApp } from "@/config/firebase";
-import {
-  connectMongooseToMongoDB,
-  generateRandomUserTokenForDevelopment,
-} from "@/config/mongoose";
+import {expressLogger} from "@/utils";
+import {initialiseFirebaseApp} from "@/config/firebase";
+import {connectMongooseToMongoDB, generateRandomUserTokenForDevelopment,} from "@/config/mongoose";
 import {startExpressServer} from "@/config/express";
 
 expressLogger.info("Connected to Firebase Admin");

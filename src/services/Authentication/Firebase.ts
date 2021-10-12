@@ -1,9 +1,9 @@
 import * as firebase from "firebase-admin";
-import type { AuthenticationResult } from "./index";
-import { signAccessToken } from "./index";
-import { getModuleLogger } from "@/utils";
-import { UnauthorizedException } from "@/utils/exceptions";
-import { getUserOrCreateNew } from "@/services/User";
+import type {AuthenticationResult} from "./index";
+import {signAccessToken} from "./index";
+import {getModuleLogger} from "@/utils";
+import {UnauthorizedException} from "@/utils/exceptions";
+import {getUserOrCreateNew} from "@/services/User";
 
 const firebaseAuthenticationLogger = getModuleLogger(__filename);
 

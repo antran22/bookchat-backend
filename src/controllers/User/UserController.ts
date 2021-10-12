@@ -1,33 +1,10 @@
-import {
-  Body,
-  Delete,
-  Get,
-  Path,
-  Post,
-  Put,
-  Query,
-  Request,
-  Route,
-  Security,
-  Tags,
-  UploadedFile,
-} from "@tsoa/runtime";
-import {
-  User,
-  UserJSON,
-  UserModel,
-  UserProfileUpdateInput,
-} from "@/models/User";
+import {Body, Delete, Get, Path, Post, Put, Query, Request, Route, Security, Tags, UploadedFile,} from "@tsoa/runtime";
+import {User, UserJSON, UserModel, UserProfileUpdateInput,} from "@/models/User";
 import type express from "express";
-import { BadRequestException, NotFoundException } from "@/utils/exceptions";
-import {
-  env,
-  getLastID,
-  multerFileHaveMatchingMimeType,
-  multerFileToStaticUrl,
-} from "@/utils";
-import type { DeleteResult, Listing } from "../_ControllerUtils";
-import { listUser } from "@/services/User";
+import {BadRequestException, NotFoundException} from "@/utils/exceptions";
+import {env, getLastID, multerFileHaveMatchingMimeType, multerFileToStaticUrl,} from "@/utils";
+import type {DeleteResult, Listing} from "../_ControllerUtils";
+import {listUser} from "@/services/User";
 
 @Tags("User")
 @Route("users")

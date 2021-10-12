@@ -1,4 +1,4 @@
-import { DocumentType, prop, Ref } from "@typegoose/typegoose";
+import {DocumentType, prop, Ref} from "@typegoose/typegoose";
 import type {
   ArrayPropOptions,
   BasePropOptions,
@@ -8,7 +8,7 @@ import type {
   PropOptionsForString,
   VirtualOptions,
 } from "@typegoose/typegoose/lib/types";
-import { IObjectWithTypegooseFunction } from "@typegoose/typegoose/lib/types";
+import {IObjectWithTypegooseFunction} from "@typegoose/typegoose/lib/types";
 import mongoose from "mongoose";
 import _ from "lodash";
 

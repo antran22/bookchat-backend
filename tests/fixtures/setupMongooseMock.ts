@@ -1,5 +1,5 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { mongoose } from "@typegoose/typegoose";
+import {MongoMemoryServer} from "mongodb-memory-server";
+import {mongoose} from "@typegoose/typegoose";
 
 beforeAll(async () => {
   const server = await MongoMemoryServer.create();
