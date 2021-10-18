@@ -1,8 +1,5 @@
-import { User } from "@/models/User";
-import {
-  FriendRequestJSON,
-  FriendRequestModel,
-} from "@/models/Friendship/FriendRequest";
+import {User} from "@/models/User";
+import {FriendRequestJSON, FriendRequestModel,} from "@/models/Friendship/FriendRequest";
 
 export async function createFriendRequest(
   user: User,

@@ -1,8 +1,8 @@
-import { FriendshipModel } from "@/models/Friendship/Friendship";
-import { Types } from "mongoose";
-import { getUsersWithIds } from "@/services/User";
-import { User, UserJSON } from "@/models/User";
-import { ListOptions } from "@/models/_BaseModel";
+import {FriendshipModel} from "@/models/Friendship/Friendship";
+import {Types} from "mongoose";
+import {getUsersWithIds} from "@/services/User";
+import {User, UserJSON} from "@/models/User";
+import {ListOptions} from "@/models/_BaseModel";
 
 export async function listFriendsOfAnUser(
   userId: string,

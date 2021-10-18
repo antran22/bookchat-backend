@@ -1,8 +1,8 @@
-import { DatabaseModel } from "../_BaseModel";
-import { getModelForClass, prop } from "@typegoose/typegoose";
-import { User, UserJSON, UserModel } from "../User";
-import { requiredProp } from "@/utils";
-import { Types } from "mongoose";
+import {DatabaseModel} from "../_BaseModel";
+import {getModelForClass, prop} from "@typegoose/typegoose";
+import {User, UserJSON, UserModel} from "../User";
+import {requiredProp} from "@/utils";
+import {Types} from "mongoose";
 import _ from "lodash";
 
 export class Book extends DatabaseModel {

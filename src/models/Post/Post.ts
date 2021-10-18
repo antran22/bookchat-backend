@@ -1,7 +1,7 @@
-import { requiredProp } from "@/utils/typegoose";
-import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
-import { DatabaseModel } from "../_BaseModel";
-import { User, UserJSON } from "../User";
+import {requiredProp} from "@/utils/typegoose";
+import {getModelForClass, prop, Ref} from "@typegoose/typegoose";
+import {DatabaseModel} from "../_BaseModel";
+import {User, UserJSON} from "../User";
 
 export class Post extends DatabaseModel {
   @requiredProp({ ref: () => User })

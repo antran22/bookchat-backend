@@ -1,8 +1,8 @@
-import {requiredProp} from "@/utils/typegoose";
-import {getModelForClass, index, Ref} from "@typegoose/typegoose";
-import {DatabaseModel} from "../_BaseModel";
-import {User, UserJSON} from "../User";
-import {Post, PostJSON} from "./Post";
+import { requiredProp } from "@/utils/typegoose";
+import { getModelForClass, index, Ref } from "@typegoose/typegoose";
+import { DatabaseModel } from "../_BaseModel";
+import { User, UserJSON } from "../User";
+import { Post, PostJSON } from "./Post";
 
 @index({ user: 1, post: 1 }, { unique: true }) // compound index
 export class PostLike extends DatabaseModel {

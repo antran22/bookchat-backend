@@ -1,5 +1,5 @@
-import { UserModel } from "@/models/User";
-import { mongoose } from "@typegoose/typegoose";
+import {UserModel} from "@/models/User";
+import {mongoose} from "@typegoose/typegoose";
 import _ = require("lodash");
 
 describe("The UserModel", () => {

@@ -1,12 +1,15 @@
-import { mongoose } from "@typegoose/typegoose";
-import { env, getModuleLogger, NodeEnv } from "@/utils";
-import { UserModel } from "@/models/User";
-import { signAccessToken } from "@/services/Authentication";
+import {mongoose} from "@typegoose/typegoose";
+import {env, getModuleLogger, NodeEnv} from "@/utils";
+import {UserModel} from "@/models/User";
+import {signAccessToken} from "@/services/Authentication";
 
 const logger = getModuleLogger(__filename);
 
 export async function connectMongooseToMongoDB() {
-  const databaseUrl: string = env("MONGO_URL", "mongodb://localhost:27017/bookchat");
+  const databaseUrl: string = env(
+    "MONGO_URL",
+    "mongodb://localhost:27017/bookchat"
+  );
 
   await mongoose.connect(databaseUrl, {
     useNewUrlParser: true,

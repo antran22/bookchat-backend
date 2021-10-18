@@ -1,10 +1,10 @@
-import {PostLike, PostLikeJSON, PostLikeModel} from "@/models/Post";
-import {ListOptions} from "@/models/_BaseModel";
-import {User} from "@/models/User";
-import {DeleteResult} from "@/controllers/_ControllerUtils";
-import {BadRequestException} from "@/utils";
-import {Error as MongooseError} from "mongoose";
-import {notifyNewPostLike} from "@/services/Notification/NotificationService";
+import { PostLike, PostLikeJSON, PostLikeModel } from "@/models/Post";
+import { ListOptions } from "@/models/_BaseModel";
+import { User } from "@/models/User";
+import { DeleteResult } from "@/controllers/_ControllerUtils";
+import { BadRequestException } from "@/utils";
+import { Error as MongooseError } from "mongoose";
+import { notifyNewPostLike } from "@/services/Notification/NotificationService";
 
 export async function makeUserLikePost(
   userId: string,

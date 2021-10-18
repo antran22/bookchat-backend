@@ -1,6 +1,6 @@
-import { UserModel } from "@/models/User";
-import { BookModel } from "@/models/Book";
-import { Error } from "mongoose";
+import {UserModel} from "@/models/User";
+import {BookModel} from "@/models/Book";
+import {Error} from "mongoose";
 
 describe("The Book Model", () => {
   beforeAll(async () => {
