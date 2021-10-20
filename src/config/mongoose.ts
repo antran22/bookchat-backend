@@ -1,7 +1,7 @@
-import {mongoose} from "@typegoose/typegoose";
-import {env, getModuleLogger, NodeEnv} from "@/utils";
-import {UserModel} from "@/models/User";
-import {signAccessToken} from "@/services/Authentication";
+import { mongoose } from "@typegoose/typegoose";
+import { env, getModuleLogger, NodeEnv } from "@/utils";
+import { UserModel } from "@/models/User";
+import { signAccessToken } from "@/services/Authentication";
 
 const logger = getModuleLogger(__filename);
 
@@ -16,6 +16,10 @@ export async function connectMongooseToMongoDB() {
     useUnifiedTopology: true,
   });
   logger.info(`Connected to database at ${databaseUrl}`);
+}
+
+export async function disconnectMongoose() {
+  await mongoose.disconnect();
 }
 
 export async function generateRandomUserTokenForDevelopment() {

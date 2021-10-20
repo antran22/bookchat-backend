@@ -1,6 +1,6 @@
 import {
+  Body,
   Delete,
-  FormField,
   Get,
   Path,
   Post,
@@ -10,13 +10,18 @@ import {
   Route,
   Security,
   Tags,
-  UploadedFile,
 } from "@tsoa/runtime";
 import type express from "express";
-import {env, getLastID, multerFileToStaticUrl, NotFoundException,} from "@/utils";
-import type {DeleteResult, Listing} from "../_ControllerUtils";
-import {createBook, listBook, updateBook} from "@/services/Book";
-import {BookJSON, BookModel} from "@/models/Book";
+import { env, getLastID, NotFoundException } from "@/utils";
+import type { DeleteResult, Listing } from "../_ControllerUtils";
+import {
+  createBook,
+  CreateBookInput,
+  listBook,
+  updateBook,
+  UpdateBookInput,
+} from "@/services/Book";
+import { BookJSON, BookModel } from "@/models/Book";
 
 @Tags("Books")
 @Route("books")
@@ -76,35 +81,29 @@ export class BookController {
   }
 
   /**
-   * Create a book
+   * Create a book. Upload thumbnails at /uploads and add the urls here.
    */
   @Security("jwt")
   @Post("/")
   public async createBook(
     @Request() request: express.Request,
-    @FormField() name: string,
-    @FormField() description: string,
-    /** Can either be the User._id refers to the author user object or just a name */
-    @FormField() author: string,
-
-    /** Can either be the User._id refers to the translator user object or just a name */
-    @FormField() translator?: string,
-    @FormField() isbn?: string,
-    @FormField() publisher?: string,
-    @UploadedFile() thumbnail?: Express.Multer.File
+    @Body() body: CreateBookInput
   ): Promise<BookJSON> {
-    const thumbnailUrl = await multerFileToStaticUrl(thumbnail);
-    return createBook({
-      name,
-      description,
-      author,
-      translator,
-      isbn,
-      publisher,
-      thumbnail: thumbnailUrl,
-    });
+    return createBook(body);
   }
 
+  /**
+   * Update a book. Upload thumbnails at /uploads and add the urls here.
+   */
+  @Security("jwt")
+  @Put("/{bookId}")
+  public async updateBook(
+    @Request() request: express.Request,
+    @Path() bookId: string,
+    @Body() updateBody: UpdateBookInput
+  ): Promise<BookJSON> {
+    return updateBook(bookId, updateBody);
+  }
   /**
    * Delete
    */
@@ -121,37 +120,5 @@ export class BookController {
     return {
       deleted: await book.jsonify(),
     };
-  }
-
-  /**
-   * Update book
-   */
-  @Security("jwt")
-  @Put("/{bookId}")
-  public async updateBook(
-    @Request() request: express.Request,
-    @Path() bookId: string,
-
-    @FormField() name?: string,
-    @FormField() description?: string,
-    /** Can either be the User._id refers to the author user object or just a name */
-    @FormField() author?: string,
-    /** Can either be the User._id refers to the translator user object or just a name */
-    @FormField() translator?: string,
-
-    @FormField() isbn?: string,
-    @FormField() publisher?: string,
-    @UploadedFile() thumbnail?: Express.Multer.File
-  ): Promise<BookJSON> {
-    const thumbnailUrl = await multerFileToStaticUrl(thumbnail);
-    return updateBook(bookId, {
-      name,
-      description,
-      author,
-      translator,
-      isbn,
-      publisher,
-      thumbnail: thumbnailUrl,
-    });
   }
 }

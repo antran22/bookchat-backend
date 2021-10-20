@@ -13,6 +13,7 @@
     "dev": "nodemon",
     "build": "tsoa spec-and-routes && tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "exec": "tsoa spec-and-routes && ts-node -r tsconfig-paths/register src/app.ts | pino-pretty",
+    "cli": "ts-node -r tsconfig-paths/register src/cli.ts",
     "tsoa": "tsoa"
   },
   "dependencies": {
@@ -20,10 +21,13 @@
     "axios": "^0.21.3",
     "body-parser": "^1.19.0",
     "chai-as-promised": "^7.1.1",
+    "commander": "^8.2.0",
+    "csv-parse": "^4.16.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-pino-logger": "^6.0.0",
     "firebase-admin": "^9.11.1",
+    "googleapis": "^39.2.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "mongoose": "^5.13.8",
