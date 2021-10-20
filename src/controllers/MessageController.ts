@@ -1,9 +1,25 @@
-import {Delete, FormField, Get, Path, Post, Query, Request, Route, Security, Tags, UploadedFiles,} from "@tsoa/runtime";
+import {
+  Delete,
+  FormField,
+  Get,
+  Path,
+  Post,
+  Query,
+  Request,
+  Route,
+  Security,
+  Tags,
+  UploadedFiles,
+} from "@tsoa/runtime";
 import type express from "express";
-import {env, getLastID} from "@/utils";
-import type {Listing} from "./_ControllerUtils";
-import {createMessage, listMessageInConversation, revokeMessage,} from "@/services/Message";
-import {MessageJSON} from "@/models/Message";
+import { env, getLastID } from "@/utils";
+import type { Listing } from "./_ControllerUtils";
+import {
+  createMessage,
+  listMessageInConversation,
+  revokeMessage,
+} from "@/services/Message";
+import { MessageJSON } from "@/models/Message";
 
 @Tags("Message")
 @Route("messages")
@@ -73,4 +89,12 @@ export class MessagesController {
     // Todo: Notify SocketIO about this revocation
     return message;
   }
+
+  @Security("jwt")
+  @Get("/contacts")
+  public async getContacts(
+    @Request() request: express.Request,
+    @Query() limit: number,
+    @Query() cursor?: string
+  ) {}
 }

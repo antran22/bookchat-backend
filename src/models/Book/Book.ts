@@ -1,16 +1,13 @@
-import {DatabaseModel} from "../_BaseModel";
-import {getModelForClass, prop} from "@typegoose/typegoose";
-import {User, UserJSON, UserModel} from "../User";
-import {requiredProp} from "@/utils";
-import {Types} from "mongoose";
+import { DatabaseModel } from "../_BaseModel";
+import { getModelForClass, prop } from "@typegoose/typegoose";
+import { User, UserJSON, UserModel } from "../User";
+import { requiredProp } from "@/utils";
+import { Types } from "mongoose";
 import _ from "lodash";
 
 export class Book extends DatabaseModel {
   @requiredProp()
   name!: string;
-
-  @prop()
-  isbn?: string;
 
   @prop()
   thumbnail?: string;
@@ -21,8 +18,17 @@ export class Book extends DatabaseModel {
   @prop()
   publisher?: string;
 
-  @requiredProp()
-  author!: string;
+  @prop()
+  publishDate?: Date;
+
+  @requiredProp({ type: () => [String] })
+  genres!: string[];
+
+  @prop()
+  author?: string;
+
+  @prop()
+  price?: number;
 
   @prop()
   translator?: string;
@@ -60,11 +66,12 @@ export class Book extends DatabaseModel {
     return {
       _id: this._id.toString(),
       name: this.name,
-      isbn: this.isbn,
       description: this.description,
       thumbnail: this.thumbnail,
       publisher: this.publisher,
-      author: authorJSON!,
+      genres: this.genres,
+      price: this.price,
+      author: authorJSON,
       translator: translatorJSON,
     };
   }
@@ -73,11 +80,13 @@ export class Book extends DatabaseModel {
 export type BookJSON = {
   _id: string;
   name: string;
-  isbn?: string;
   description: string;
   publisher?: string;
+  publishDate?: Date;
+  genres: string[];
   thumbnail?: string;
-  author: UserJSON | string;
+  price?: number;
+  author?: UserJSON | string;
   translator?: UserJSON | string;
 };
 

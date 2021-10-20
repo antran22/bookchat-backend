@@ -3,7 +3,7 @@ import path from "path";
 
 export const logger = pino({
   redact: ["*.password"],
-  level: "debug",
+  level: process.env.NODE_ENV === "production" ? "info" : "trace",
 });
 
 export function getModuleLogger(fileName: string) {

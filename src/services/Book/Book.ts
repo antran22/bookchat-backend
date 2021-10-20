@@ -1,6 +1,6 @@
-import {ListOptions} from "@/models/_BaseModel";
-import {Book, BookJSON, BookModel} from "@/models/Book";
-import {ModelNotFoundException} from "@/utils";
+import { ListOptions } from "@/models/_BaseModel";
+import { Book, BookJSON, BookModel } from "@/models/Book";
+import { ModelNotFoundException, Optional } from "@/utils";
 
 export async function listBook(options: ListBookOption): Promise<BookJSON[]> {
   let query = BookModel.listByCursor(options);
@@ -19,14 +19,14 @@ export interface ListBookOption extends ListOptions {
   translator?: string;
 }
 
-export async function createBook(input: MutateBookInput): Promise<BookJSON> {
+export async function createBook(input: CreateBookInput): Promise<BookJSON> {
   const book = await BookModel.create(input);
   return book.jsonify();
 }
 
 export async function updateBook(
   bookId: string,
-  input: Partial<MutateBookInput>
+  input: UpdateBookInput
 ): Promise<BookJSON> {
   const book = await BookModel.findByIdAndUpdate(bookId, input).exec();
   if (!book) {
@@ -35,15 +35,18 @@ export async function updateBook(
   return book.jsonify();
 }
 
-interface MutateBookInput {
+export interface CreateBookInput {
   name: string;
   description: string;
   /** Can either be the User._id refers to the author user object or just a name */
-  author: string;
+  author?: string;
   /** Can either be the User._id refers to the translator user object or just a name */
-
   translator?: string;
-  isbn?: string;
   publisher?: string;
+  publishDate?: Date;
   thumbnail?: string;
+  genres: string[];
+  price?: number;
 }
+
+export type UpdateBookInput = Optional<CreateBookInput>;
