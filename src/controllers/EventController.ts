@@ -13,8 +13,8 @@ import {
   UploadedFiles,
 } from "@tsoa/runtime";
 import express from "express";
-import { Listing, wrapListingResult } from "@/controllers/_ControllerUtils";
-import { ModelNotFoundException } from "@/utils";
+import { Listing , wrapListingResult} from "@/controllers/_ControllerUtils";
+import {  ModelNotFoundException } from "@/utils";
 import { EventJSON, EventModel } from "@/models/Event";
 import { createEvent, listEvents, updateEvent } from "@/services/Event";
 
