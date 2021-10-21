@@ -1,4 +1,4 @@
-import {Message} from "@/models/Message";
+import {Message} from "@/models/Message/Message";
 import {EventType, NotificationType} from "@/models/Notification";
 import {Post, PostComment, PostLike} from "@/models/Post";
 

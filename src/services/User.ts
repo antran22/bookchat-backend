@@ -1,5 +1,5 @@
 import * as firebaseAdmin from "firebase-admin";
-import { User, UserModel } from "@/models/User";
+import { User, UserJSON, UserModel } from "@/models/User";
 import { BadRequestException, getModuleLogger } from "@/utils";
 import { ListOptions } from "@/models/_BaseModel";
 
@@ -50,6 +50,18 @@ export async function getUserOrCreateNew(
     return { user: newUser, isNew: true };
   }
   return { user, isNew: false };
+}
+
+export function mapUserIdToRecords(
+  userRecords: UserJSON[]
+): Record<string, UserJSON> {
+  const userIdToRecordMapping: Record<string, UserJSON> = {};
+
+  userRecords.forEach((record) => {
+    userIdToRecordMapping[record._id] = record;
+  });
+
+  return userIdToRecordMapping;
 }
 
 export async function getUsersWithIds(ids: string[]): Promise<User[]> {
