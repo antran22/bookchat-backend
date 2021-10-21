@@ -18,8 +18,13 @@ import {
   createMessage,
   listMessageInConversation,
   revokeMessage,
-} from "@/services/Message";
-import { MessageJSON } from "@/models/Message";
+} from "@/services/Message/Message";
+import { MessageJSON } from "@/models/Message/Message";
+import {
+  addOrUpdateContact,
+  ContactListItemJSON,
+  listContacts,
+} from "@/services/Message/Contact";
 
 @Tags("Message")
 @Route("messages")
@@ -70,10 +75,16 @@ export class MessagesController {
     @FormField() content: string,
     @UploadedFiles() attachments?: Express.Multer.File[]
   ): Promise<MessageJSON> {
-    return await createMessage(request.user, recipientID, {
+    // Todo: notify this message
+
+    const message = await createMessage(request.user, recipientID, {
       content,
       attachments,
     });
+
+    await addOrUpdateContact(request.user, recipientID);
+
+    return message;
   }
 
   /**
@@ -85,9 +96,8 @@ export class MessagesController {
     @Request() request: express.Request,
     @Path() messageId: string
   ): Promise<MessageJSON> {
-    const message = await revokeMessage(messageId);
     // Todo: Notify SocketIO about this revocation
-    return message;
+    return revokeMessage(messageId);
   }
 
   @Security("jwt")
@@ -96,5 +106,20 @@ export class MessagesController {
     @Request() request: express.Request,
     @Query() limit: number,
     @Query() cursor?: string
-  ) {}
+  ): Promise<Listing<ContactListItemJSON>> {
+    const contacts = await listContacts(request.user, { limit, cursor });
+    const lastContactId = getLastID(contacts);
+
+    const nextUrl = lastContactId
+      ? env.resolveAPIPath(request.path, {
+          cursor: lastContactId,
+          limit,
+        })
+      : undefined;
+
+    return {
+      data: contacts,
+      nextUrl,
+    };
+  }
 }

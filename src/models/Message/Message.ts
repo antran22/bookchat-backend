@@ -1,7 +1,7 @@
 import {getReferenceIdString, requiredProp} from "@/utils/typegoose";
 import {getModelForClass, prop, Ref} from "@typegoose/typegoose";
-import {DatabaseModel} from "./_BaseModel";
-import {User} from "./User";
+import {DatabaseModel} from "../_BaseModel";
+import {User} from "../User";
 
 export class Message extends DatabaseModel {
   @requiredProp({ ref: () => User })

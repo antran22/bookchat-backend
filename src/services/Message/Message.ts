@@ -1,9 +1,12 @@
-import {Types} from "mongoose";
-import {Message, MessageJSON, MessageModel} from "@/models/Message";
-import {User, UserModel} from "@/models/User";
-import {multipleMulterFilesToStaticUrls, NotFoundException} from "@/utils";
-import {ListOptions} from "@/models/_BaseModel";
-import {notifyUnreadMessage, signalNewMessage, signalRevokedMessage,} from "@/services/Notification";
+import { Message, MessageJSON, MessageModel } from "@/models/Message/Message";
+import { User, UserModel } from "@/models/User";
+import { multipleMulterFilesToStaticUrls, NotFoundException } from "@/utils";
+import { ListOptions } from "@/models/_BaseModel";
+import {
+  notifyUnreadMessage,
+  signalNewMessage,
+  signalRevokedMessage,
+} from "@/services/Notification";
 
 async function lastMessageTime(
   senderId: string,
@@ -75,17 +78,7 @@ export async function revokeMessage(messageId: string): Promise<MessageJSON> {
 export async function listMessageInConversation(
   options: MessageListOptions
 ): Promise<MessageJSON[]> {
-  let query;
-  if (options.cursor) {
-    query = MessageModel.find({
-      _id: {
-        $gt: new Types.ObjectId(options.cursor),
-      },
-    });
-  } else {
-    query = MessageModel.find();
-  }
-  query = query.find({
+  const messages = await MessageModel.listByCursor(options).find({
     $or: [
       {
         sender: options.firstParticipantId,
@@ -97,7 +90,6 @@ export async function listMessageInConversation(
       },
     ],
   });
-  const messages = await query.limit(options.limit).exec();
   return Message.jsonifyAll(messages);
 }
 
