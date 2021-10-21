@@ -12,14 +12,14 @@ import { FriendRequestJSON } from "@/models/Friendship";
 import { createFriendRequest, deleteFriendRequest } from "@/services/Friendship/FriendRequest";
 import { DeleteResult } from "../_ControllerUtils";
 
-@Tags("Friend")
-@Route("friend")
-export class FriendController {
+@Tags("FriendRequest")
+@Route("friendRequest")
+export class FriendRequestController {
 	/**
 	 * Send a friend request
 	 */
 	@Security("jwt")
-	@Put("/{recipientId}/friendrequest")
+	@Put("/{recipientId}/sending")
 	public async FriendRequest(
 			@Request() request: express.Request,
 			@Path() recipientId: string
