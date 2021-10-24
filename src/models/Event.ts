@@ -1,7 +1,7 @@
-import {requiredProp} from "@/utils/typegoose";
-import {getModelForClass, prop, Ref} from "@typegoose/typegoose";
-import {DatabaseModel} from "@/models/_BaseModel";
-import {User, UserJSON} from "@/models/User";
+import { requiredProp } from "@/utils/typegoose";
+import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
+import { DatabaseModel } from "@/models/_BaseModel";
+import { User, UserJSON } from "@/models/User";
 
 export class Event extends DatabaseModel {
   @requiredProp()

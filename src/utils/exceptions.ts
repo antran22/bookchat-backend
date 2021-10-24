@@ -1,5 +1,5 @@
-import {DatabaseModel} from "@/models/_BaseModel";
-import {TypegooseModel} from "@/utils/typegoose";
+import { DatabaseModel } from "@/models/_BaseModel";
+import { TypegooseModel } from "@/utils/typegoose";
 
 export abstract class HTTPException extends Error {
   statusCode!: number;

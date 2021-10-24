@@ -63,7 +63,3 @@ export function mapUserIdToRecords(
 
   return userIdToRecordMapping;
 }
-
-export async function getUsersWithIds(ids: string[]): Promise<User[]> {
-  return UserModel.find().where("_id").in(ids).exec();
-}

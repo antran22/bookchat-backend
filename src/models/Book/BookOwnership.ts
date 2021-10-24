@@ -1,9 +1,9 @@
-import {DatabaseModel} from "../_BaseModel";
-import {getModelForClass, index, Ref} from "@typegoose/typegoose";
-import {User, UserJSON} from "../User";
-import {requiredProp} from "@/utils";
-import {Book, BookJSON} from "./Book";
-import {BookReadingStatus} from "./BookStatus";
+import { DatabaseModel } from "../_BaseModel";
+import { getModelForClass, index, Ref } from "@typegoose/typegoose";
+import { User, UserJSON } from "../User";
+import { requiredProp } from "@/utils";
+import { Book, BookJSON } from "./Book";
+import { BookReadingStatus } from "./BookStatus";
 
 @index({ book: 1, owner: 1 }, { unique: true })
 export class BookOwnership extends DatabaseModel {

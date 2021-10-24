@@ -1,8 +1,21 @@
-import {Body, Delete, Get, Path, Post, Put, Query, Request, Route, Security, Tags,} from "@tsoa/runtime";
-import {PostCommentJSON, PostLikeJSON, PostModel} from "@/models/Post";
+import {
+  Body,
+  Delete,
+  Get,
+  Path,
+  Post,
+  Put,
+  Query,
+  Request,
+  Route,
+  Security,
+  Tags,
+} from "@tsoa/runtime";
+import { PostCommentJSON, PostLikeJSON, PostModel } from "@/models/Post";
 import type express from "express";
-import {env, getLastID, NotFoundException} from "@/utils";
-import type {DeleteResult, Listing} from "../_ControllerUtils";
+import { NotFoundException } from "@/utils";
+import type { DeleteResult, Listing } from "../_ControllerUtils";
+import { wrapListingResult } from "../_ControllerUtils";
 import {
   createPostComment,
   CreatePostCommentInput,
@@ -20,6 +33,7 @@ export class PostCommentsController {
    */
   @Get("/{postId}/comments/")
   public async listComment(
+    @Request() request: express.Request,
     @Path() postId: string,
     @Query() limit: number,
     @Query() cursor?: string
@@ -29,15 +43,7 @@ export class PostCommentsController {
     }
     const posts = await listCommentFromPost({ post: postId, cursor, limit });
 
-    const lastId = getLastID(posts);
-
-    return {
-      data: posts,
-      nextUrl: env.resolveAPIPath(`posts/${postId}/comments`, {
-        limit,
-        cursor: lastId,
-      }),
-    };
+    return wrapListingResult(posts, request);
   }
   /**
    * Add a comment to a post

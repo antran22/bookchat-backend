@@ -1,8 +1,8 @@
-import { User, UserJSON } from "@/models/User";
+import { User, UserJSON, UserModel } from "@/models/User";
 import { ListOptions } from "@/models/_BaseModel";
 import { Contact, ContactJSON, ContactModel } from "@/models/Message/Contact";
 import { Types } from "mongoose";
-import { getUsersWithIds, mapUserIdToRecords } from "@/services/User";
+import { mapUserIdToRecords } from "@/services/User";
 
 export interface ContactListItemJSON {
   _id: string;
@@ -22,14 +22,14 @@ function matchContactsWithUserRecords(
       return {
         _id: contact._id.toString(),
         user: user1,
-        lastTime : contact.lastTime,
+        lastTime: contact.lastTime,
       };
     }
     const user2 = userIdToRecordMap[contact.user2!.toString()];
     return {
       _id: contact._id.toString(),
       user: user2,
-      lastTime : contact.lastTime,
+      lastTime: contact.lastTime,
     };
   });
 }
@@ -57,7 +57,7 @@ export async function listContacts(
     return contact.user1!.toString();
   });
 
-  const users = await getUsersWithIds(contactIds);
+  const users = await UserModel.findByMultipleIds(contactIds);
   const userJSONs = await User.jsonifyAll(users);
 
   return matchContactsWithUserRecords(contacts, userJSONs);

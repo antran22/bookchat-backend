@@ -1,8 +1,20 @@
-import {Body, Delete, Get, Path, Post, Put, Query, Request, Route, Security, Tags,} from "@tsoa/runtime";
+import {
+  Body,
+  Delete,
+  Get,
+  Path,
+  Post,
+  Put,
+  Query,
+  Request,
+  Route,
+  Security,
+  Tags,
+} from "@tsoa/runtime";
 import type express from "express";
-import type {DeleteResult, Listing} from "../_ControllerUtils";
-import {BookReviewJSON} from "@/models/Book/BookReview";
-import {env, getLastID} from "@/utils";
+import type { DeleteResult, Listing } from "../_ControllerUtils";
+import { wrapListingResult } from "../_ControllerUtils";
+import { BookReviewJSON } from "@/models/Book";
 import {
   calculateAverageReview,
   createBookReview,
@@ -12,7 +24,7 @@ import {
   getReviewsForBook,
   updateBookReview,
   UpdateBookReviewInput,
-} from "@/services/Book/BookReview";
+} from "@/services/Book";
 
 @Tags("Books Review")
 @Route("books")
@@ -34,19 +46,7 @@ export class BookReviewController {
       cursor,
     });
 
-    const lastReviewId = getLastID(review);
-
-    const nextUrl = lastReviewId
-      ? env.resolveAPIPath(request.path, {
-          cursor: lastReviewId,
-          limit,
-        })
-      : undefined;
-
-    return {
-      data: review,
-      nextUrl,
-    };
+    return wrapListingResult(review, request);
   }
 
   /**

@@ -13,10 +13,10 @@ import {
   UploadedFiles,
 } from "@tsoa/runtime";
 import express from "express";
-import {Listing} from "@/controllers/_ControllerUtils";
-import {env, getLastID, ModelNotFoundException} from "@/utils";
-import {EventJSON, EventModel} from "@/models/Event";
-import {createEvent, listEvents, updateEvent} from "@/services/Event";
+import { Listing, wrapListingResult } from "@/controllers/_ControllerUtils";
+import { ModelNotFoundException } from "@/utils";
+import { EventJSON, EventModel } from "@/models/Event";
+import { createEvent, listEvents, updateEvent } from "@/services/Event";
 
 @Tags("Event")
 @Route("events/")
@@ -34,19 +34,7 @@ export class EventController extends Controller {
   ): Promise<Listing<EventJSON>> {
     const events = await listEvents({ limit, cursor });
 
-    const lastEventID = getLastID(events);
-
-    const nextUrl = lastEventID
-      ? env.resolveAPIPath(`/messages`, {
-          cursor: lastEventID,
-          limit,
-        })
-      : undefined;
-
-    return {
-      data: events,
-      nextUrl,
-    };
+    return wrapListingResult(events, request);
   }
 
   /**

@@ -1,9 +1,9 @@
 import type express from "express";
-import {decodeAccessToken} from "./JWT";
-import {BadRequestException, UnauthorizedException} from "@/utils/exceptions";
-import {User, UserModel} from "@/models/User";
+import { decodeAccessToken } from "./JWT";
+import { BadRequestException, UnauthorizedException } from "@/utils/exceptions";
+import { User, UserModel } from "@/models/User";
 import _ from "lodash";
-import {env, expressLogger} from "@/utils";
+import { env, expressLogger } from "@/utils";
 
 export async function expressAuthentication(
   request: express.Request,
@@ -11,6 +11,7 @@ export async function expressAuthentication(
   scopes?: string[]
 ): Promise<User> {
   if (securityName === "jwt") {
+    expressLogger.debug({ scopes }, "JWT authentication initiated with scopes");
     const authHeader = request.headers["authorization"];
     if (!authHeader) {
       throw new UnauthorizedException(
