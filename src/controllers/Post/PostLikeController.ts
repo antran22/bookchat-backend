@@ -11,13 +11,9 @@ import {
 } from "@tsoa/runtime";
 import { PostLikeJSON, PostModel } from "@/models/Post";
 import type express from "express";
-import {
-  env,
-  getLastID,
-  ModelNotFoundException,
-  NotFoundException,
-} from "@/utils";
+import { ModelNotFoundException, NotFoundException } from "@/utils";
 import type { DeleteResult, Listing } from "../_ControllerUtils";
+import { wrapListingResult } from "../_ControllerUtils";
 import {
   listLikeFromPost,
   makeUserLikePost,
@@ -48,18 +44,7 @@ export class PostLikesController {
       cursor,
     });
 
-    const lastPostId = getLastID(postLikeJSONs);
-
-    const nextUrl = lastPostId
-      ? env.resolveAPIPath(`/posts/{postId}/likes`, {
-          cursor: lastPostId,
-          limit,
-        })
-      : undefined;
-    return {
-      data: postLikeJSONs,
-      nextUrl,
-    };
+    return wrapListingResult(postLikeJSONs, request);
   }
 
   /**

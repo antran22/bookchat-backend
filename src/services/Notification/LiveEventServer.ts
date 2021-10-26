@@ -1,7 +1,11 @@
-import {Server} from "socket.io";
+import { Server } from "socket.io";
 import http from "http";
-import {EventType, NotificationModel, NotificationType,} from "@/models/Notification";
-import {expressAuthentication} from "@/services/Authentication";
+import {
+  EventType,
+  NotificationModel,
+  NotificationType,
+} from "@/models/Notification";
+import { expressAuthentication } from "@/services/Authentication";
 import express from "express";
 
 class LiveEventServer {

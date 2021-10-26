@@ -1,7 +1,7 @@
 import {Body, Delete, Get, Path, Post, Query, Request, Route, Security, Tags,} from "@tsoa/runtime";
 import type express from "express";
-import {env, getLastID} from "@/utils";
 import type {Listing} from "../_ControllerUtils";
+import {wrapListingResult} from "../_ControllerUtils";
 import {
   addBookOwnedByUser,
   CreateBookshelfOwnershipInput,
@@ -23,20 +23,7 @@ export class BookshelfController {
       limit,
       cursor,
     });
-
-    const lastBookId = getLastID(books);
-
-    const nextUrl = lastBookId
-      ? env.resolveAPIPath(request.path, {
-          cursor: lastBookId,
-          limit,
-        })
-      : undefined;
-
-    return {
-      data: books,
-      nextUrl,
-    };
+    return wrapListingResult(books, request);
   }
 
   /**

@@ -12,19 +12,16 @@ import {
   UploadedFiles,
 } from "@tsoa/runtime";
 import type express from "express";
-import { env, getLastID } from "@/utils";
-import type { Listing } from "./_ControllerUtils";
-import {
-  createMessage,
-  listMessageInConversation,
-  revokeMessage,
-} from "@/services/Message/Message";
-import { MessageJSON } from "@/models/Message/Message";
+import { Listing, wrapListingResult } from "./_ControllerUtils";
 import {
   addOrUpdateContact,
   ContactListItemJSON,
+  createMessage,
   listContacts,
-} from "@/services/Message/Contact";
+  listMessageInConversation,
+  revokeMessage,
+} from "@/services/Message";
+import { MessageJSON } from "@/models/Message";
 
 @Tags("Message")
 @Route("messages")
@@ -49,19 +46,7 @@ export class MessagesController {
       cursor,
     });
 
-    const lastMessageID = getLastID(messages);
-
-    const nextUrl = lastMessageID
-      ? env.resolveAPIPath(`/messages`, {
-          recipientID,
-          cursor: lastMessageID,
-          limit,
-        })
-      : undefined;
-    return {
-      data: messages,
-      nextUrl,
-    };
+    return wrapListingResult(messages, request);
   }
 
   /**
@@ -108,18 +93,6 @@ export class MessagesController {
     @Query() cursor?: string
   ): Promise<Listing<ContactListItemJSON>> {
     const contacts = await listContacts(request.user, { limit, cursor });
-    const lastContactId = getLastID(contacts);
-
-    const nextUrl = lastContactId
-      ? env.resolveAPIPath(request.path, {
-          cursor: lastContactId,
-          limit,
-        })
-      : undefined;
-
-    return {
-      data: contacts,
-      nextUrl,
-    };
+    return wrapListingResult(contacts, request);
   }
 }

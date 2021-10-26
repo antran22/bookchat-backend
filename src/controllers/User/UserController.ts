@@ -20,13 +20,9 @@ import {
 } from "@/models/User";
 import type express from "express";
 import { BadRequestException, NotFoundException } from "@/utils/exceptions";
-import {
-  env,
-  getLastID,
-  multerFileHaveMatchingMimeType,
-  multerFileToStaticUrl,
-} from "@/utils";
+import { multerFileHaveMatchingMimeType, multerFileToStaticUrl } from "@/utils";
 import type { DeleteResult, Listing } from "../_ControllerUtils";
+import { wrapListingResult } from "../_ControllerUtils";
 import { listUser } from "@/services/User";
 
 @Tags("User")
@@ -40,19 +36,13 @@ export class UsersController {
    */
   @Get("/")
   public async list(
+    @Request() request: express.Request,
     @Query() limit: number,
     @Query() cursor?: string
   ): Promise<Listing<UserJSON>> {
     const users = await listUser({ limit, cursor });
     const userJSONs = await User.jsonifyAll(users);
-    const lastUserID = getLastID(userJSONs);
-    const nextUrl = lastUserID
-      ? env.resolveAPIPath("/users", { cursor: lastUserID, limit })
-      : undefined;
-    return {
-      data: userJSONs,
-      nextUrl,
-    };
+    return wrapListingResult(userJSONs, request);
   }
 
   /**

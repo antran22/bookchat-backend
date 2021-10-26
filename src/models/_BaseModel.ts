@@ -1,7 +1,7 @@
-import {TimeStamps} from "@typegoose/typegoose/lib/defaultClasses";
-import {Document, Types} from "mongoose";
-import {isDocument, Ref} from "@typegoose/typegoose";
-import {TypegooseModel} from "@/utils";
+import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
+import { Document, Types } from "mongoose";
+import { isDocument, Ref } from "@typegoose/typegoose";
+import { TypegooseModel } from "@/utils";
 
 interface Constructor<T> {
   new (...args: any): any;
@@ -71,5 +71,12 @@ export abstract class DatabaseModel extends TimeStamps {
     }
 
     return query;
+  }
+
+  static findByMultipleIds<T extends DatabaseModel>(
+    this: TypegooseModel<T>,
+    ids: (string | Types.ObjectId)[]
+  ) {
+    return this.find().where("_id").in(ids).exec();
   }
 }

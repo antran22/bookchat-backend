@@ -28,7 +28,7 @@ export type TypegooseModel<T> = mongoose.Model<
   BeAnObject
 >;
 
-interface HaveID {
+export interface HaveID {
   _id: any;
 }
 
@@ -50,10 +50,3 @@ export function getReferenceIdString<T extends HaveID>(ref: Ref<T>): string {
   return ref._id.toString();
 }
 
-export function getLastID<T extends HaveID>(values?: T[]): string | null {
-  if (!values || values.length === 0) {
-    return null;
-  }
-
-  return values[values.length - 1]._id.toString();
-}

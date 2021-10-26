@@ -1,8 +1,12 @@
-import {ListOptions} from "@/models/_BaseModel";
-import {EventJSON, EventModel} from "@/models/Event";
-import type {Types} from "mongoose";
-import {ForbiddenException, ModelNotFoundException, multipleMulterFilesToStaticUrls,} from "@/utils";
-import {User} from "@/models/User";
+import { ListOptions } from "@/models/_BaseModel";
+import { EventJSON, EventModel } from "@/models/Event";
+import type { Types } from "mongoose";
+import {
+  ForbiddenException,
+  ModelNotFoundException,
+  multipleMulterFilesToStaticUrls,
+} from "@/utils";
+import { User } from "@/models/User";
 import _ from "lodash";
 
 export async function listEvents(

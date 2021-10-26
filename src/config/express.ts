@@ -1,18 +1,18 @@
 import express from "express";
 import bodyParser from "body-parser";
 import expressPino from "express-pino-logger";
-import {enumKeyList, env, expressLogger} from "@/utils";
+import { enumKeyList, env, expressLogger } from "@/utils";
 import swaggerUi from "swagger-ui-express";
 
 // npm run tsoa routes first to build this path
-import {RegisterRoutes} from "@/generated/routes";
+import { RegisterRoutes } from "@/generated/routes";
 import errorHandler from "@/controllers/_ErrorHandler";
 import http from "http";
-import {LiveEventServer} from "@/services/Notification";
+import { LiveEventServer } from "@/services/Notification";
 import fs from "fs";
-import {UserModel} from "@/models/User";
-import {signAccessToken} from "@/services/Authentication";
-import {EventType, NotificationType} from "@/models/Notification";
+import { UserModel } from "@/models/User";
+import { signAccessToken } from "@/services/Authentication";
+import { EventType, NotificationType } from "@/models/Notification";
 
 export const app = express();
 

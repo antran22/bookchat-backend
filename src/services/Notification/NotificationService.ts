@@ -1,8 +1,8 @@
-import {Message} from "@/models/Message/Message";
-import {EventType, NotificationType} from "@/models/Notification";
-import {Post, PostComment, PostLike} from "@/models/Post";
+import { Message } from "@/models/Message/Message";
+import { EventType, NotificationType } from "@/models/Notification";
+import { Post, PostComment, PostLike } from "@/models/Post";
 
-import {LiveEventServer} from "@/services/Notification";
+import { LiveEventServer } from "@/services/Notification";
 
 export async function notifyUnreadMessage(message: Message) {
   const messageJSON = await message.jsonify();

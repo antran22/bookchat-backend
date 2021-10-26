@@ -1,8 +1,8 @@
-import {env} from "./env";
-import {getModuleLogger} from "./logging";
+import { env } from "./env";
+import { getModuleLogger } from "./logging";
 import fs from "fs";
 import path from "path";
-import {v4 as uuidV4} from "uuid";
+import { v4 as uuidV4 } from "uuid";
 
 const fileModuleLogger = getModuleLogger(__filename);
 
