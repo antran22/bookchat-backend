@@ -1,2 +1,2 @@
-export * from "./Friendship";
 export * from "./FriendRequest";
+export * from "./Friendship";

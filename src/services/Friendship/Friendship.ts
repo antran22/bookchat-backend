@@ -1,18 +1,22 @@
-import { FriendshipModel } from "@/models/Friendship/Friendship";
+import {
+  FriendshipJSON,
+  FriendshipModel,
+} from "@/models/Friendship/Friendship";
 import { Types } from "mongoose";
-import { User, UserJSON, UserModel } from "@/models/User";
+import {  User, UserJSON , UserModel} from "@/models/User";
 import { ListOptions } from "@/models/_BaseModel";
+import { NotFoundException } from "@/utils";
+import { DeleteResult } from "@/controllers/_ControllerUtils";
 
 export async function listFriendsOfAnUser(
   userId: string,
   options: ListOptions
 ): Promise<UserJSON[]> {
-  let query = FriendshipModel.find()
-    .or([{ user1: userId }, { user2: userId }])
-    .limit(options.limit);
-  if (options.cursor) {
-    query = query.where({ _id: { _gt: new Types.ObjectId(options.cursor) } });
-  }
+  let query = FriendshipModel.listByCursor(options).or([
+    { user1: userId },
+    { user2: userId },
+  ]);
+
   const friendships = await query.exec();
 
   const friendIds = friendships.map(({ user1, user2 }) => {
@@ -23,4 +27,30 @@ export async function listFriendsOfAnUser(
 
   const friends = await UserModel.findByMultipleIds(friendIds);
   return User.jsonifyAll(friends);
+}
+
+export async function deleteFriendship(
+  me: User,
+  friendId: string
+): Promise<DeleteResult<FriendshipJSON>> {
+  const friendship = await FriendshipModel.findOneAndDelete({
+    $or: [
+      {
+        user1: friendId,
+        user2: me._id,
+      },
+      {
+        user1: me._id,
+        user2: friendId,
+      },
+    ],
+  }).exec();
+
+  if (!friendship) {
+    throw new NotFoundException("You don't have friend with this user");
+  }
+
+  return {
+    deleted: await friendship.jsonify(),
+  };
 }

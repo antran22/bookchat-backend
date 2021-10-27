@@ -3,7 +3,7 @@ import { decodeAccessToken } from "./JWT";
 import { BadRequestException, UnauthorizedException } from "@/utils/exceptions";
 import { User, UserModel } from "@/models/User";
 import _ from "lodash";
-import { expressLogger } from "@/utils";
+import {  expressLogger } from "@/utils";
 
 export async function expressAuthentication(
   request: express.Request,
