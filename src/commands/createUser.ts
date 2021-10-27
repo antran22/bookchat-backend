@@ -5,6 +5,7 @@ import { signAccessToken } from "@/services/Authentication";
 export async function createTestUser(displayName: string) {
   const user = await UserModel.create({
     firebaseId: random(10000).toString(),
+    active: true,
     displayName,
   });
 

@@ -1,10 +1,28 @@
-import {Body, Delete, Get, Path, Post, Put, Query, Request, Route, Security, Tags,} from "@tsoa/runtime";
+import {
+  Body,
+  Delete,
+  Get,
+  Path,
+  Post,
+  Put,
+  Query,
+  Request,
+  Route,
+  Security,
+  Tags,
+} from "@tsoa/runtime";
 import type express from "express";
-import {NotFoundException} from "@/utils";
-import type {DeleteResult, Listing} from "../_ControllerUtils";
-import {wrapListingResult} from "../_ControllerUtils";
-import {createBook, CreateBookInput, listBook, updateBook, UpdateBookInput,} from "@/services/Book";
-import {BookJSON, BookModel} from "@/models/Book";
+import { NotFoundException } from "@/utils";
+import type { DeleteResult, Listing } from "../_ControllerUtils";
+import { wrapListingResult } from "../_ControllerUtils";
+import {
+  createBook,
+  CreateBookInput,
+  listBook,
+  updateBook,
+  UpdateBookInput,
+} from "@/services/Book";
+import { BookJSON, BookModel } from "@/models/Book";
 
 @Tags("Books")
 @Route("books")

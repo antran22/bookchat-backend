@@ -5,11 +5,14 @@ import { Optional } from "@/utils";
 import { DatabaseModel } from "./_BaseModel";
 
 export class User extends DatabaseModel {
-  @requiredProp({ unique: true })
-  firebaseId!: string;
+  @prop()
+  firebaseId?: string;
 
   @requiredProp()
   displayName!: string;
+
+  @requiredProp({ default: true })
+  active!: boolean;
 
   @prop({ default: "unspecified" })
   gender!: string;
@@ -35,6 +38,7 @@ export class User extends DatabaseModel {
     return {
       _id: this._id.toString(),
       displayName: this.displayName,
+      active: this.active,
       gender: this.gender,
       avatar: this.avatar,
       bio: this.bio,
@@ -49,6 +53,7 @@ export type UserProfileUpdateInput = Optional<
 
 export type UserJSON = {
   _id: string;
+  active: boolean;
   displayName: string;
   gender: string;
   avatar?: string;

@@ -47,7 +47,7 @@ export async function importBookFromCSVFile(csvFile: string) {
       publishDate: parsePublishDate(record[13]),
       description: record[14] || "<empty>",
     };
-    if (!book.name) {
+    if (!book.name || !book.author) {
       continue;
     }
     try {
