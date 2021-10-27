@@ -1,14 +1,25 @@
-import {Body, Delete, Get, Path, Post, Query, Request, Route, Security, Tags,} from "@tsoa/runtime";
+import {
+  Body,
+  Delete,
+  Get,
+  Path,
+  Post,
+  Query,
+  Request,
+  Route,
+  Security,
+  Tags,
+} from "@tsoa/runtime";
 import type express from "express";
-import type {Listing} from "../_ControllerUtils";
-import {wrapListingResult} from "../_ControllerUtils";
+import type { Listing } from "../_ControllerUtils";
+import { wrapListingResult } from "../_ControllerUtils";
 import {
   addBookOwnedByUser,
   CreateBookshelfOwnershipInput,
   listBookInUserBookshelf,
   removeOwnedBookFromShelf,
 } from "@/services/Book";
-import {BookJSON, BookOwnershipJSON} from "@/models/Book";
+import { BookJSON, BookOwnershipJSON } from "@/models/Book";
 
 @Tags("Bookshelf")
 @Route("bookshelf")

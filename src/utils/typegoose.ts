@@ -23,10 +23,7 @@ type PropOptions =
 export const requiredProp = (options?: PropOptions) =>
   prop({ ...options, required: true });
 
-export type TypegooseModel<T> = mongoose.Model<
-  DocumentType<T, BeAnObject>,
-  BeAnObject
->;
+export type TypegooseModel<T> = mongoose.Model<DocumentType<T>, BeAnObject>;
 
 export interface HaveID {
   _id: any;
@@ -49,4 +46,3 @@ export function getReferenceIdString<T extends HaveID>(ref: Ref<T>): string {
   // @ts-ignore
   return ref._id.toString();
 }
-

@@ -19,7 +19,6 @@ export interface DatabaseModel extends Document {}
 export abstract class DatabaseModel extends TimeStamps {
   /** @ignore */
   _id!: Types.ObjectId;
-  __v!: number;
 
   /**
    * This method is used when returning objects to the API output.

@@ -3,7 +3,7 @@ import { decodeAccessToken } from "./JWT";
 import { BadRequestException, UnauthorizedException } from "@/utils/exceptions";
 import { User, UserModel } from "@/models/User";
 import _ from "lodash";
-import { env, expressLogger } from "@/utils";
+import { expressLogger } from "@/utils";
 
 export async function expressAuthentication(
   request: express.Request,
@@ -31,28 +31,13 @@ export async function expressAuthentication(
       );
     }
 
-    // This is a little bit insecure, and should be used for testing only.
-    if (env.bool("ENABLE_MASTER_TOKEN", false)) {
-      const masterToken = env("MASTER_TOKEN", "");
-      if (masterToken.length > 10 && token === masterToken) {
-        const user = await UserModel.findOne().sort({ _id: "asc" }).exec();
-        if (user) {
-          expressLogger.warn(
-            { impersonatedUser: user },
-            "Master token is being used."
-          );
-          return user;
-        }
-      }
-    }
-
     const jwtPayload = await decodeAccessToken(token);
     if (!jwtPayload) {
       throw new UnauthorizedException("Invalid access token supplied");
     }
 
     const user = await UserModel.findById(jwtPayload.userId).exec();
-    if (!user) {
+    if (!user || !user.active) {
       throw new UnauthorizedException("Invalid access token supplied");
     }
     return user;

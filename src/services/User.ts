@@ -2,14 +2,20 @@ import * as firebaseAdmin from "firebase-admin";
 import { User, UserJSON, UserModel } from "@/models/User";
 import { BadRequestException, getModuleLogger } from "@/utils";
 import { ListOptions } from "@/models/_BaseModel";
+import _ from "lodash";
 
 const userServiceLogger = getModuleLogger(__filename);
 
+export interface UserListOptions extends ListOptions {
+  active?: boolean;
+}
 /**
  * List user using cursor method. Fetch `limit` users with `_id > cursor`.
  */
-export async function listUser(options: ListOptions): Promise<User[]> {
-  return UserModel.listByCursor(options).exec();
+export async function listUser(options: UserListOptions): Promise<User[]> {
+  return UserModel.listByCursor(options)
+    .where(_.omit(options, "limit", "cursor"))
+    .exec();
 }
 
 /**
@@ -37,7 +43,7 @@ export async function createUserFromFirebase(
  * This method is used when sign up with Firebase. So far this is the only method of signing up for this API.
  * @param input the Firebase User Record.
  */
-export async function getUserOrCreateNew(
+export async function getUserOrCreateNewFromFirebase(
   input: firebaseAdmin.auth.UserRecord
 ): Promise<{ user: User; isNew: boolean }> {
   userServiceLogger.info(

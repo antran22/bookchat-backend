@@ -6,6 +6,7 @@ import {
 } from "@/config/mongoose";
 import { importBookFromCSVFile } from "@/commands/importBook";
 import { createTestUser } from "@/commands/createUser";
+import { deleteBook } from "@/commands/deleteBook";
 
 const program = new Command();
 program.version("0.0.1");
@@ -18,6 +19,12 @@ program.command("import_book <csvfile>").action(async (csvfile) => {
 program.command("create_user <displayName>").action(async (displayName) => {
   await initCLI();
   await createTestUser(displayName);
+  await deinitCLI();
+});
+
+program.command("delete_book [bookId]").action(async (bookId) => {
+  await initCLI();
+  await deleteBook(bookId);
   await deinitCLI();
 });
 program.parse(process.argv);
