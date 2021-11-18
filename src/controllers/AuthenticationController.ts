@@ -1,6 +1,8 @@
 import { Controller, Get, Query, Route, Tags } from "@tsoa/runtime";
-import { AuthenticationResult } from "@/services/Authentication";
-import { authenticateWithFirebase } from "@/services/Authentication/Firebase";
+import {
+  authenticateWithFirebase,
+  AuthenticationResult,
+} from "@/services/Authentication";
 
 @Tags("Authentication")
 @Route("auth")

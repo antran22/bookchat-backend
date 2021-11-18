@@ -19,6 +19,7 @@
   "dependencies": {
     "@typegoose/typegoose": "^8.2.0",
     "axios": "^0.21.3",
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "chai-as-promised": "^7.1.1",
     "commander": "^8.2.0",
@@ -36,9 +37,11 @@
     "socket.io": "^4.2.0",
     "swagger-ui-express": "^4.1.6",
     "tsoa": "^3.2.1",
+    "typegoose": "^5.9.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/body-parser": "^1.19.1",
     "@types/chai-as-promised": "^7.1.4",
     "@types/express": "^4.17.13",

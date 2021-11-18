@@ -7,6 +7,7 @@ export async function createTestUser(displayName: string) {
     firebaseId: random(10000).toString(),
     active: true,
     displayName,
+    isAdmin: true,
   });
 
   console.log("New Token", signAccessToken(user));

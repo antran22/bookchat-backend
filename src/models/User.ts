@@ -26,6 +26,9 @@ export class User extends DatabaseModel {
   @prop()
   dateOfBirth?: Date;
 
+  @prop()
+  isAdmin?: boolean;
+
   async profileUpdate(
     this: TypegooseDocument<this>,
     input: UserProfileUpdateInput
@@ -43,6 +46,7 @@ export class User extends DatabaseModel {
       avatar: this.avatar,
       bio: this.bio,
       dateOfBirth: this.dateOfBirth,
+      isAdmin: this.isAdmin,
     };
   }
 }
@@ -59,6 +63,7 @@ export type UserJSON = {
   avatar?: string;
   bio?: string;
   dateOfBirth?: Date;
+  isAdmin?: boolean;
 };
 
 export const UserModel = getModelForClass(User);

@@ -1,9 +1,13 @@
 import type express from "express";
 import { decodeAccessToken } from "./JWT";
-import { BadRequestException, UnauthorizedException } from "@/utils/exceptions";
+import {
+  BadRequestException,
+  ForbiddenException,
+  UnauthorizedException,
+} from "@/utils/exceptions";
 import { User, UserModel } from "@/models/User";
 import _ from "lodash";
-import {  expressLogger } from "@/utils";
+import { expressLogger } from "@/utils";
 
 export async function expressAuthentication(
   request: express.Request,
@@ -20,7 +24,7 @@ export async function expressAuthentication(
     }
     if (!_.isString(authHeader)) {
       throw new BadRequestException(
-        "Acess token must be included in the requester header as Bearer token"
+        "Access token must be included in the requester header as Bearer token"
       );
     }
 
@@ -40,6 +44,11 @@ export async function expressAuthentication(
     if (!user || !user.active) {
       throw new UnauthorizedException("Invalid access token supplied");
     }
+
+    if (_.includes(scopes, "admin") && !user.isAdmin) {
+      throw new ForbiddenException("Cannot access admin specific route");
+    }
+
     return user;
   }
   throw new Error(`Security type ${securityName} is not yet defined`);

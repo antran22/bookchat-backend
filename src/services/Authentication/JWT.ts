@@ -4,15 +4,15 @@ import jwt from "jsonwebtoken";
 
 const jwtServiceLogger = getModuleLogger(__filename);
 
+const jwtSecret = env("JWT_SECRET");
+const jwtExpiry = env("JWT_EXPIRY", "1w");
+
 /**
  * The format of the JWT payload that is encoded into the token.
  */
 interface AppJWTPayload {
   userId: string;
 }
-
-const jwtSecret = env("JWT_SECRET");
-const jwtExpiry = env("JWT_EXPIRY", "1w");
 
 /**
  * Sign a JWT token for a given user.

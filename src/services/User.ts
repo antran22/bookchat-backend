@@ -1,6 +1,10 @@
 import * as firebaseAdmin from "firebase-admin";
 import { User, UserJSON, UserModel } from "@/models/User";
-import { BadRequestException, getModuleLogger } from "@/utils";
+import {
+  BadRequestException,
+  getModuleLogger,
+  ModelNotFoundException,
+} from "@/utils";
 import { ListOptions } from "@/models/_BaseModel";
 import _ from "lodash";
 
@@ -68,4 +72,24 @@ export function mapUserIdToRecords(
   });
 
   return userIdToRecordMapping;
+}
+
+export async function listAdmin(listOptions: ListOptions): Promise<UserJSON[]> {
+  const admins = await UserModel.listByCursor(listOptions)
+    .where("isAdmin", true)
+    .exec();
+  return User.jsonifyAll(admins);
+}
+
+export async function setUserPrivilege(
+  userId: string,
+  isAdmin: boolean
+): Promise<UserJSON> {
+  const user = await UserModel.findById(userId).exec();
+  if (!user) {
+    throw new ModelNotFoundException(UserModel, userId);
+  }
+  user.isAdmin = isAdmin;
+  await user.save();
+  return user.jsonify();
 }
