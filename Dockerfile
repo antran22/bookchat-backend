@@ -1,5 +1,6 @@
 # Build stage
 FROM node:14-alpine AS builder
+RUN apk add --no-cache alpine-sdk python3
 WORKDIR /usr/app/
 COPY *.json ./
 RUN npm ci
@@ -10,7 +11,7 @@ RUN npm run build
 FROM node:14-alpine
 ENV NODE_ENV=production
 
-RUN apk add --no-cache tini
+RUN apk add --no-cache tini alpine-sdk python3
 WORKDIR /usr/app/
 RUN chown node:node .
 
