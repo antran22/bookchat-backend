@@ -70,6 +70,21 @@ export class UsersController {
   }
 
   /**
+   * Update any user profile
+   */
+  @Security("jwt", ["admin"])
+  @Put("{userId}")
+  public async updateUserProfile(
+    @Request() request: express.Request,
+    @Path() userId: string,
+    @Body() input: UserProfileUpdateInput
+  ): Promise<UserJSON> {
+    const user = await UserModel.findByIdOrFail(userId);
+    await user.profileUpdate(input);
+    return user.jsonify();
+  }
+
+  /**
    * Delete your personal profile
    */
   @Security("jwt")
@@ -81,6 +96,22 @@ export class UsersController {
     await request.user.delete();
     return {
       deleted: sanitisedUserRecord,
+    };
+  }
+
+  /**
+   * Delete your personal profile
+   */
+  @Security("jwt", ["admin"])
+  @Delete("{userId}")
+  public async deleteUserAccount(
+    @Request() request: express.Request,
+    @Path() userId: string
+  ): Promise<DeleteResult<UserJSON>> {
+    const user = await UserModel.findByIdOrFail(userId);
+    await user.delete();
+    return {
+      deleted: await user.jsonify(),
     };
   }
 

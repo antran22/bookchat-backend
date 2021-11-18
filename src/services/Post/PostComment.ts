@@ -29,7 +29,7 @@ async function getCommentAndCheckForOwnership(commentId: string, user: User) {
   if (!comment) {
     throw new NotFoundException(`Cannot find PostComment with Id ${commentId}`);
   }
-  if (!user._id.equals(comment.user as Types.ObjectId)) {
+  if (!user.isAdmin || !user._id.equals(comment.user as Types.ObjectId)) {
     throw new ForbiddenException("You can only modify your own comments.");
   }
   return comment;

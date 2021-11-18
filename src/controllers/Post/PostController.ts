@@ -94,7 +94,7 @@ export class PostsController {
     if (!post) {
       throw new NotFoundException(`There is no Post with ID ${postId}`);
     }
-    if (post.author !== request.user._id) {
+    if (!request.user.isAdmin || post.author !== request.user._id) {
       throw new ForbiddenException("You cannot delete this Post");
     }
     return {

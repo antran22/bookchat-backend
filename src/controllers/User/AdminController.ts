@@ -1,5 +1,4 @@
 import {
-  Body,
   Get,
   Path,
   Put,
@@ -9,7 +8,7 @@ import {
   Security,
   Tags,
 } from "@tsoa/runtime";
-import { UserJSON, UserModel, UserProfileUpdateInput } from "@/models/User";
+import { UserJSON, UserModel } from "@/models/User";
 import type express from "express";
 import { ModelNotFoundException } from "@/utils/exceptions";
 import type { Listing } from "../_ControllerUtils";
@@ -37,24 +36,6 @@ export class AdminController {
   }
 
   /**
-   * Update any user profile
-   */
-  @Security("jwt", ["admin"])
-  @Put("{userId}")
-  public async updateUserProfile(
-    @Request() request: express.Request,
-    @Path() userId: string,
-    @Body() input: UserProfileUpdateInput
-  ): Promise<UserJSON> {
-    const user = await UserModel.findById(userId).exec();
-    if (!user) {
-      throw new ModelNotFoundException(UserModel, userId);
-    }
-    await user.profileUpdate(input);
-    return user.jsonify();
-  }
-
-  /**
    * Update the user privilege
    */
   @Security("jwt", ["admin"])
@@ -70,6 +51,6 @@ export class AdminController {
     }
     user.isAdmin = isAdmin;
     await user.save();
-    return user.jsonify()
+    return user.jsonify();
   }
 }

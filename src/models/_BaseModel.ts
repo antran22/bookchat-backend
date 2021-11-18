@@ -1,7 +1,11 @@
 import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { Document, Types } from "mongoose";
 import { isDocument, Ref } from "@typegoose/typegoose";
-import { TypegooseModel } from "@/utils";
+import {
+  ModelNotFoundException,
+  TypegooseDocument,
+  TypegooseModel,
+} from "@/utils";
 
 interface Constructor<T> {
   new (...args: any): any;
@@ -70,6 +74,17 @@ export abstract class DatabaseModel extends TimeStamps {
     }
 
     return query;
+  }
+
+  static async findByIdOrFail<T extends DatabaseModel>(
+    this: TypegooseModel<T>,
+    id: string
+  ): Promise<TypegooseDocument<T>> {
+    const object = await this.findById(id).exec();
+    if (!object) {
+      throw new ModelNotFoundException(this, id);
+    }
+    return object;
   }
 
   static findByMultipleIds<T extends DatabaseModel>(
