@@ -2,15 +2,15 @@ import parse from "csv-parse";
 import fs from "fs";
 import { createBook } from "@/services/Book";
 
-function removeEmptyValue(array: string[]) {
-  return array.filter((val) => !!val);
-}
-
 function parsePublishDate(dateString?: string): Date | undefined {
   if (!dateString) {
     return new Date();
   }
-  return new Date(Date.parse(dateString));
+  const timestamp = Date.parse(dateString);
+  if (isNaN(timestamp)) {
+    return new Date();
+  }
+  return new Date(timestamp);
 }
 
 export function parseNumber(s: string): number {
@@ -32,7 +32,7 @@ export async function importBookFromCSVFile(csvFile: string) {
       author: record[10],
       translator: record[13],
       publisher: record[6],
-      genres: removeEmptyValue(record[9]),
+      genres: record[9],
       price: parseNumber(record[2] ?? "0"),
       pageCount: parseNumber(record[8] ?? "0"),
       publishDate: parsePublishDate(record[5] ?? ""),
