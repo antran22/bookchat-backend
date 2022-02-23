@@ -6,20 +6,11 @@ function removeEmptyValue(array: string[]) {
   return array.filter((val) => !!val);
 }
 
-function parsePublishDate(dateString: string): Date | undefined {
-  if (dateString.length < 4) {
-    return undefined;
+function parsePublishDate(dateString?: string): Date | undefined {
+  if (!dateString) {
+    return new Date();
   }
-
-  if (dateString.length === 4) {
-    return new Date(parseInt(dateString));
-  }
-
-  if (dateString.length <= 6) {
-    const [month, year] = dateString.split("/");
-    return new Date(parseInt(year), parseInt(month));
-  }
-  return undefined;
+  return new Date(Date.parse(dateString));
 }
 
 export function parseNumber(s: string): number {
@@ -37,15 +28,16 @@ export async function importBookFromCSVFile(csvFile: string) {
 
   for await (const record of parser) {
     const book = {
-      name: record[1],
-      author: record[3],
-      translator: record[4],
-      publisher: record[5],
-      genres: removeEmptyValue(record.slice(6, 11)),
-      price: parseNumber(record[11] ?? "0"),
-      pageCount: parseNumber(record[12] ?? "0"),
-      publishDate: parsePublishDate(record[13]),
-      description: record[14] || "<empty>",
+      name: record[11],
+      author: record[10],
+      translator: record[13],
+      publisher: record[6],
+      genres: removeEmptyValue(record[9]),
+      price: parseNumber(record[2] ?? "0"),
+      pageCount: parseNumber(record[8] ?? "0"),
+      publishDate: parsePublishDate(record[5] ?? ""),
+      thumbnail: record[12],
+      description: record[7] || "<empty>",
     };
     if (!book.name || !book.author) {
       continue;
@@ -55,7 +47,6 @@ export async function importBookFromCSVFile(csvFile: string) {
     } catch (e) {
       console.log(e);
       console.log(book);
-      break;
     }
     console.log("Written book", book.name);
   }
