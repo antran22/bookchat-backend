@@ -4,6 +4,7 @@ import express from "express";
 export interface Listing<T> {
   data: T[];
   nextUrl?: string;
+  nextCursor?: string;
 }
 
 export interface DeleteResult<T> {
@@ -32,5 +33,6 @@ export function wrapListingResult<T extends HaveID>(
   return {
     data: result,
     nextUrl,
+    nextCursor: lastId ?? undefined,
   };
 }

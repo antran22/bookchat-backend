@@ -1,6 +1,6 @@
 #!/bin/sh
 
-IMAGE_TAG="registry.git.yitec.net/bookchat/backend"
+IMAGE_TAG="antran2202/bookchat-backend"
 CANONICAL_TAG="$IMAGE_TAG:$(date +%Y_%m_%d)"
 LATEST_TAG="$IMAGE_TAG:latest"
 
