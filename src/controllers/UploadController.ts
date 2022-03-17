@@ -14,14 +14,14 @@ export interface UploadResult {
 }
 
 @Tags("Upload")
-@Route("upload")
+@Route("uploads")
 export class UploadController {
   /**
-   * Create a book
+   * Upload some files to the server and get the url back.
    */
   @Security("jwt")
   @Post("/")
-  public async createBook(
+  public async uploadFiles(
     @Request() request: express.Request,
     @UploadedFiles() images: Express.Multer.File[]
   ): Promise<UploadResult> {
